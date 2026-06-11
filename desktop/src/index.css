@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in-delayed {
+    animation: fadeIn 1s ease-out 0.5s forwards;
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes toothEnter {
+  0% {
+    transform: perspective(1000px) scale(0.1) translateY(200px) rotateY(-720deg) rotateZ(-30deg);
+    opacity: 0;
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  }
+
+  60% {
+    transform: perspective(1000px) scale(1.4) translateY(-30px) rotateY(180deg) rotateZ(15deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.9));
+  }
+
+  80% {
+    transform: perspective(1000px) scale(0.9) translateY(10px) rotateY(30deg) rotateZ(-5deg);
+    filter: drop-shadow(0 0 60px rgba(255, 255, 255, 1));
+  }
+
+  100% {
+    transform: perspective(1000px) scale(1) translateY(0) rotateY(0deg) rotateZ(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.7));
+  }
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 0.8;
+  }
+
+  100% {
+    left: 200%;
+    opacity: 0;
+  }
+}
+
+@keyframes splashFadeOut {
+  0% {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  100% {
+    opacity: 0;
+    filter: blur(10px);
+    transform: scale(1.1);
+    visibility: hidden;
+  }
+}
+
+.animate-tooth-enter {
+  animation: toothEnter 2.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  transform-style: preserve-3d;
+}
+
+.animate-splash-fade-out {
+  animation: splashFadeOut 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.shine-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: skewX(-25deg);
+  animation: shine 2.5s ease-in-out infinite 0.5s;
+}
+
+.bg-white\/60 {
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, oklch(0.83 0.03 199.23) 60%, transparent);
+  }
+
+  .bg-\[\#6899B0\] {
+    background-color: #2e3d53a6;
+  }
+
+}
