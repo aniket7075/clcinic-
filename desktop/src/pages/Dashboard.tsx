@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/authSlice';
 import type { RootState } from '../store';
-import { LogOut, Users, Calendar, LayoutDashboard, Settings, UserCircle, IndianRupee, Package, BarChart2, FileText, Activity, HelpCircle, Bell, Building2 } from 'lucide-react';
+import { LogOut, Users, Calendar, LayoutDashboard, Settings, UserCircle, IndianRupee, Package, BarChart2, Activity, HelpCircle, Bell, Building2 } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import axios from '../api/axios';
 import ClinicSwitcher from '../components/ClinicSwitcher';

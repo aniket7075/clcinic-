@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { Bell, Check, CheckCircle2, AlertCircle, Info, Trash2 } from 'lucide-react';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../store';
+import { Bell, Check, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 interface Notification {
   id: string;

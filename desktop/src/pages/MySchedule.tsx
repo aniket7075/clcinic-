@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import api from '../api/axios';
 import type { RootState } from '../store';
-import { Calendar, Clock, MapPin, User as UserIcon } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 
 interface Schedule {
   id: string;
