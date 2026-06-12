@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Backend is running on localhost:5000 for the desktop app
-const baseURL = 'http://localhost:5000/api';
+const baseURL = 'https://clcinic.onrender.com/api';
 
 const api = axios.create({
   baseURL,
