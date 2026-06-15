@@ -23,8 +23,15 @@ import PublicBooking from './pages/PublicBooking';
 import LandingPage from './pages/LandingPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// System Admin
+import SystemAdminLayout from './components/SystemAdminLayout';
+import SystemDashboard from './pages/system-admin/SystemDashboard';
+import ClinicRequests from './pages/system-admin/ClinicRequests';
+import AllClinics from './pages/system-admin/AllClinics';
+
 const App: React.FC = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   return (
     <Router>
@@ -40,7 +47,11 @@ const App: React.FC = () => {
         />
         <Route 
           path="/" 
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/welcome" />} 
+          element={
+            isAuthenticated ? (
+              user?.role === 'SYSTEM_ADMIN' ? <Navigate to="/system-admin" /> : <Dashboard />
+            ) : <Navigate to="/welcome" />
+          } 
         >
           {/* Admin & Superadmin only */}
           <Route path="manage-clinics" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN']}><ManageClinics /></ProtectedRoute>} />
@@ -62,6 +73,16 @@ const App: React.FC = () => {
           <Route path="schedule" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin', 'DOCTOR', 'doctor']}><MySchedule /></ProtectedRoute>} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="support" element={<HelpSupport />} />
+        </Route>
+
+        {/* System Admin Routes */}
+        <Route 
+          path="/system-admin" 
+          element={isAuthenticated && user?.role === 'SYSTEM_ADMIN' ? <SystemAdminLayout /> : <Navigate to="/login" />}
+        >
+          <Route index element={<SystemDashboard />} />
+          <Route path="requests" element={<ClinicRequests />} />
+          <Route path="clinics" element={<AllClinics />} />
         </Route>
       </Routes>
     </Router>

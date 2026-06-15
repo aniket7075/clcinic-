@@ -125,3 +125,36 @@
     background-color: color-mix(in oklab, oklch(0.83 0.03 199.23) 60%, transparent);
   }
 }
+
+@keyframes floatNeon {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: drop-shadow(0 0 15px rgba(104, 153, 176, 0.4));
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+    filter: drop-shadow(0 0 35px rgba(104, 153, 176, 0.9));
+  }
+}
+
+@keyframes pulseNeonLine {
+  0%, 100% { opacity: 0.2; box-shadow: 0 0 10px rgba(104, 153, 176, 0.3); }
+  50% { opacity: 0.8; box-shadow: 0 0 30px rgba(104, 153, 176, 0.8); }
+}
+
+@keyframes floatCross {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+  50% { transform: translateY(-30px) rotate(15deg); opacity: 0.6; }
+}
+
+.animate-float-neon {
+  animation: floatNeon 5s ease-in-out infinite;
+}
+
+.animate-pulse-neon {
+  animation: pulseNeonLine 3s ease-in-out infinite;
+}
+
+.animate-float-cross {
+  animation: floatCross 6s ease-in-out infinite;
+}

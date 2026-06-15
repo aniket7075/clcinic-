@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { Beaker, Plus, Trash2, Edit2 } from 'lucide-react';
+import { Beaker, Plus } from 'lucide-react';
 
 const LabOrders: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);

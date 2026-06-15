@@ -28,7 +28,7 @@ const PatientDetails: React.FC = () => {
   const [showDocModal, setShowDocModal] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [consentType, setConsentType] = useState('ROOT_CANAL');
-  const [submitting, setSubmitting] = useState(false);
+
 
   // Form States
   const [noteForm, setNoteForm] = useState({

@@ -4,6 +4,7 @@ import { logout } from '../store/authSlice';
 import type { RootState } from '../store';
 import { LogOut, Users, Calendar, LayoutDashboard, Settings, UserCircle, IndianRupee, Package, BarChart2, Activity, HelpCircle, Bell, Building2, ArrowLeft, Beaker, Tag } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import axios from '../api/axios';
 import ClinicSwitcher from '../components/ClinicSwitcher';
 
@@ -20,6 +21,26 @@ interface DashboardStats {
   lowStockAlerts: number;
 }
 
+const mockRevenueData = [
+  { name: 'Jan', revenue: 45000 },
+  { name: 'Feb', revenue: 52000 },
+  { name: 'Mar', revenue: 48000 },
+  { name: 'Apr', revenue: 61000 },
+  { name: 'May', revenue: 59000 },
+  { name: 'Jun', revenue: 75000 },
+  { name: 'Jul', revenue: 82000 },
+];
+
+const mockPatientData = [
+  { name: 'Mon', patients: 12 },
+  { name: 'Tue', patients: 19 },
+  { name: 'Wed', patients: 15 },
+  { name: 'Thu', patients: 22 },
+  { name: 'Fri', patients: 28 },
+  { name: 'Sat', patients: 35 },
+  { name: 'Sun', patients: 10 },
+];
+
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -28,6 +49,7 @@ const Dashboard: React.FC = () => {
     const clinicName = useSelector((state: RootState) => state.auth.clinicName);
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const [activePlan, setActivePlan] = useState<string>('starter');
     
     const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'ADMIN' || user?.role === 'admin' || user?.role === 'CLINIC_ADMIN';
     const isDoctor = user?.role === 'DOCTOR' || user?.role === 'doctor';
@@ -36,6 +58,18 @@ const Dashboard: React.FC = () => {
     const isHome = location.pathname === '/';
   
     useEffect(() => {
+      const fetchPlan = async () => {
+        try {
+          const res = await axios.get('/settings/clinic');
+          if (res.data?.subscription_plan) {
+            setActivePlan(res.data.subscription_plan);
+          }
+        } catch (error) {
+          console.error("Failed to fetch clinic plan", error);
+        }
+      };
+      fetchPlan();
+
       if (isHome) {
         const fetchStats = async () => {
           try {
@@ -87,7 +121,7 @@ const Dashboard: React.FC = () => {
               <span>Billing</span>
             </Link>
           )}
-          {isAdmin && (
+          {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
             <>
               <Link to="/expenses" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/expenses') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                 <Tag size={20} strokeWidth={location.pathname.startsWith('/expenses') ? 2.5 : 2} />
@@ -119,7 +153,7 @@ const Dashboard: React.FC = () => {
             <Bell size={20} strokeWidth={location.pathname.startsWith('/notifications') ? 2.5 : 2} />
             <span>Notifications</span>
           </Link>
-          {isAdmin && (
+          {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
             <>
               <div className="pt-4 pb-1.5 px-4">
                 <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest opacity-80">Administration</p>
@@ -138,7 +172,7 @@ const Dashboard: React.FC = () => {
           )}
           {isAdmin && (
             <>
-              {isSuperAdmin && (
+              {isSuperAdmin && activePlan === 'enterprise' && (
                 <Link to="/manage-clinics" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/manage-clinics') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                   <Building2 size={20} strokeWidth={location.pathname.startsWith('/manage-clinics') ? 2.5 : 2} />
                   <span>Manage Clinics</span>
@@ -191,7 +225,8 @@ const Dashboard: React.FC = () => {
                   <Activity className="animate-spin text-blue-600" size={32} />
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                       <h3 className="text-black text-sm ">Today's Appointments</h3>
@@ -234,9 +269,12 @@ const Dashboard: React.FC = () => {
                         <p className="text-3xl font-bold text-black mt-4">₹{stats?.pendingPayments}</p>
                       </div>
 
-                      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                        <div className="flex justify-between items-start">
-                          <h3 className="text-black text-sm ">Low Stock Alerts</h3>
+                      {/* Inventory and Staff Cards only for Pro/Enterprise */}
+                      {(activePlan === 'pro' || activePlan === 'enterprise') && (
+                        <>
+                          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                            <div className="flex justify-between items-start">
+                              <h3 className="text-black text-sm ">Low Stock Alerts</h3>
                           <div className={`p-2 rounded-lg ${stats && stats.lowStockAlerts > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
                             <Package size={20} />
                           </div>
@@ -253,11 +291,71 @@ const Dashboard: React.FC = () => {
                             <UserCircle size={20} />
                           </div>
                         </div>
-                        <p className="text-3xl font-bold text-black mt-4">{stats?.totalStaff}</p>
-                      </div>
+                            <p className="text-3xl font-bold text-black mt-4">{stats?.totalStaff}</p>
+                          </div>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
+
+                {/* Charts Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                  {/* Revenue Trend Chart (Available for Admins on Pro/Enterprise) */}
+                  {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 lg:col-span-2">
+                      <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-lg font-bold text-black">Revenue Growth</h3>
+                        <select className="bg-slate-50 border border-slate-200 text-sm rounded-lg px-3 py-1 outline-none text-slate-600">
+                          <option>This Year</option>
+                          <option>Last Year</option>
+                        </select>
+                      </div>
+                      <div className="h-72 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={mockRevenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <defs>
+                              <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#6899B0" stopOpacity={0.3}/>
+                                <stop offset="95%" stopColor="#6899B0" stopOpacity={0}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} dy={10} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} tickFormatter={(val) => `₹${val/1000}k`} />
+                            <RechartsTooltip 
+                              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                              formatter={(value: any) => [`₹${value.toLocaleString()}`, 'Revenue']}
+                            />
+                            <Area type="monotone" dataKey="revenue" stroke="#6899B0" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Patient Visits Chart */}
+                  <div className={`bg-white p-6 rounded-xl shadow-sm border border-slate-200 ${!isAdmin ? 'lg:col-span-3' : 'lg:col-span-1'}`}>
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-lg font-bold text-black">Weekly Footfall</h3>
+                    </div>
+                    <div className="h-72 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={mockPatientData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} dy={10} />
+                          <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748B' }} />
+                          <RechartsTooltip 
+                            cursor={{ fill: '#F1F5F9' }}
+                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                          />
+                          <Bar dataKey="patients" fill="#5D8799" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+                </>
               )}
             </main>
           </>

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { Calendar as CalendarIcon, User, Plus, MessageCircle } from 'lucide-react';
-import { Calendar, dateFnsLocalizer, View } from 'react-big-calendar';
+import { Calendar as CalendarIcon, Plus } from 'lucide-react';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import type { View } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
-import { enIN } from 'date-fns/locale/en-IN';
+import { enUS } from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 const locales = {
-  'en-IN': enIN,
+  'en-US': enUS,
 };
 
 const localizer = dateFnsLocalizer({
@@ -197,9 +198,9 @@ const Appointments: React.FC = () => {
           endAccessor="end"
           style={{ height: '100%' }}
           view={view}
-          onView={(newView) => setView(newView)}
+          onView={(newView: any) => setView(newView)}
           date={date}
-          onNavigate={(newDate) => setDate(newDate)}
+          onNavigate={(newDate: any) => setDate(newDate)}
           selectable
           onSelectSlot={handleSelectSlot}
           onSelectEvent={handleSelectEvent}

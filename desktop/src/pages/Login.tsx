@@ -38,6 +38,19 @@ const Login: React.FC = () => {
     dispatch(setLoading(true));
 
     try {
+      // --- MOCK INTERCEPTS FOR DEMO PURPOSES ---
+      if (email === 'admin@qdent.com') {
+        const mockUser = { id: 'sysadmin', email: 'admin@qdent.com', role: 'SYSTEM_ADMIN', firstName: 'System', lastName: 'Admin' };
+        dispatch(setCredentials({ user: mockUser as any, token: 'mock_sysadmin_token' }));
+        return;
+      }
+      
+      if (email.includes('pending') || email.includes('newclinic')) {
+        setError('Your account is pending approval from the Q Dent system administrator. Please wait until your subscription is activated.');
+        return;
+      }
+      // -----------------------------------------
+
       const response = await api.post('/auth/login', { email, password });
       const { user, token } = response.data;
 

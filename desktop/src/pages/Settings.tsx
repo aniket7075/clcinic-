@@ -427,76 +427,83 @@ const Settings: React.FC = () => {
       </div>
 
       {/* Payment Modal */}
+      {/* Razorpay Simulation Modal */}
       {isPaymentModalOpen && (
-        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                <CreditCard className="text-[#6899B0]" />
-                Secure Checkout
-              </h2>
-              <button onClick={() => !processingPayment && setIsPaymentModalOpen(false)} className="text-slate-400 hover:text-slate-600">×</button>
+        <div className="fixed inset-0 bg-slate-900/70 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-[400px] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+            {/* Razorpay Header */}
+            <div className="bg-[#121212] p-5 text-white flex justify-between items-start relative">
+               <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl uppercase">Test Mode</div>
+               <div className="flex gap-4 items-center">
+                 <div className="w-12 h-12 bg-white rounded flex items-center justify-center font-bold text-black text-xl">Q</div>
+                 <div>
+                   <h2 className="font-medium text-lg leading-tight">Q Dent</h2>
+                   <p className="text-white/60 text-sm">Subscription Upgrade</p>
+                 </div>
+               </div>
+               <div className="text-right">
+                  <p className="text-white/60 text-xs">Amount</p>
+                  <p className="font-semibold text-lg">₹{selectedPlanToUpgrade === 'pro' ? '3,499' : '6,999'}</p>
+               </div>
             </div>
             
+            {/* Razorpay Body */}
             {paymentSuccess ? (
-              <div className="p-10 text-center">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle2 size={40} className="text-green-600" />
+              <div className="p-8 text-center flex flex-col items-center justify-center min-h-[300px]">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-4 shadow-lg shadow-green-500/30">
+                  <CheckCircle2 size={32} className="text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-800 mb-2">Payment Successful!</h3>
-                <p className="text-slate-500">Your clinic has been upgraded to the {selectedPlanToUpgrade.toUpperCase()} plan.</p>
+                <h3 className="text-xl font-bold text-slate-800 mb-1">Payment Successful</h3>
+                <p className="text-slate-500 text-sm">Redirecting to dashboard...</p>
               </div>
             ) : (
-              <form onSubmit={processPayment} className="p-6">
-                <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200 flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-slate-500 font-medium">Selected Plan</p>
-                    <p className="font-bold text-slate-800 capitalize">{selectedPlanToUpgrade} Plan</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm text-slate-500 font-medium">Amount Due</p>
-                    <p className="text-xl font-black text-[#6899B0]">{selectedPlanToUpgrade === 'pro' ? '₹3,499' : '₹6,999'}</p>
+              <form onSubmit={processPayment} className="p-0 flex-1 flex flex-col min-h-[400px]">
+                <div className="bg-[#F4F8FB] p-3 text-xs text-center border-b border-slate-200 text-slate-500">
+                   English | ₹ INR
+                </div>
+                
+                <div className="p-5 flex-1 space-y-4">
+                  <div className="text-sm font-medium text-slate-800 mb-2">Contact Details</div>
+                  <input type="text" defaultValue={formData.phone} placeholder="Phone Number" className="w-full p-3 border-b border-slate-300 text-sm outline-none focus:border-blue-500 transition-colors" required />
+                  <input type="email" defaultValue={formData.email} placeholder="Email Address" className="w-full p-3 border-b border-slate-300 text-sm outline-none focus:border-blue-500 transition-colors" required />
+                  
+                  <div className="text-sm font-medium text-slate-800 mt-6 mb-2">Cards, UPI & More</div>
+                  <div className="border border-slate-200 rounded-lg overflow-hidden">
+                     <div className="flex items-center gap-3 p-3 border-b border-slate-200 bg-blue-50/50 cursor-pointer">
+                        <CreditCard size={18} className="text-blue-600" />
+                        <span className="text-sm font-medium text-slate-700">Card</span>
+                     </div>
+                     <div className="p-4 space-y-3 bg-white">
+                        <input type="text" placeholder="Card Number" className="w-full p-2.5 border border-slate-300 rounded text-sm outline-none focus:border-blue-500" required />
+                        <div className="grid grid-cols-2 gap-3">
+                          <input type="text" placeholder="Expiry (MM/YY)" className="w-full p-2.5 border border-slate-300 rounded text-sm outline-none focus:border-blue-500" required />
+                          <input type="text" placeholder="CVV" className="w-full p-2.5 border border-slate-300 rounded text-sm outline-none focus:border-blue-500" required />
+                        </div>
+                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4 mb-8">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Card Number</label>
-                    <input type="text" placeholder="0000 0000 0000 0000" className="w-full p-3 border border-slate-300 rounded-lg outline-none focus:border-[#6899B0]" required />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Expiry</label>
-                      <input type="text" placeholder="MM/YY" className="w-full p-3 border border-slate-300 rounded-lg outline-none focus:border-[#6899B0]" required />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">CVC</label>
-                      <input type="text" placeholder="123" className="w-full p-3 border border-slate-300 rounded-lg outline-none focus:border-[#6899B0]" required />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Name on Card</label>
-                    <input type="text" placeholder="John Doe" className="w-full p-3 border border-slate-300 rounded-lg outline-none focus:border-[#6899B0]" required />
+                {/* Razorpay Footer */}
+                <div className="p-4 border-t border-slate-200 bg-slate-50">
+                  <button 
+                    type="submit" 
+                    disabled={processingPayment}
+                    className="w-full py-3.5 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 disabled:opacity-70 transition-all flex justify-center items-center shadow-md shadow-blue-600/20 uppercase tracking-wide text-sm"
+                  >
+                    {processingPayment ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      `Pay ₹${selectedPlanToUpgrade === 'pro' ? '3,499' : '6,999'}`
+                    )}
+                  </button>
+                  <div className="flex justify-between items-center mt-3 px-1">
+                    <span className="text-[10px] text-slate-400 font-medium">Secured by Razorpay</span>
+                    <button type="button" onClick={() => !processingPayment && setIsPaymentModalOpen(false)} className="text-[11px] text-slate-500 hover:text-slate-800 font-medium">Cancel</button>
                   </div>
                 </div>
-
-                <button 
-                  type="submit" 
-                  disabled={processingPayment}
-                  className="w-full py-3.5 bg-[#6899B0] text-white font-bold rounded-xl hover:bg-[#5D8799] disabled:opacity-70 transition-all flex justify-center items-center gap-2"
-                >
-                  {processingPayment ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Processing...
-                    </>
-                  ) : (
-                    `Pay ${selectedPlanToUpgrade === 'pro' ? '₹3,499' : '₹6,999'}`
-                  )}
-                </button>
-                <p className="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1">
-                  🔒 Payments are secure and encrypted.
-                </p>
               </form>
             )}
           </div>
