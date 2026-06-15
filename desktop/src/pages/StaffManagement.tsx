@@ -174,15 +174,15 @@ const StaffManagement: React.FC = () => {
   };
 
   const renderTabs = () => (
-    <div className="flex space-x-4 mb-6 border-b border-slate-200">
+    <div className="flex space-x-6 mb-8 border-b border-slate-200">
       {['overview', 'attendance', 'leaves', 'schedule'].map((tab) => (
         <button
           key={tab}
           onClick={() => setActiveTab(tab as any)}
-          className={`pb-3 px-2 font-medium capitalize transition-colors ${
+          className={`pb-3 font-semibold capitalize transition-colors ${
             activeTab === tab
-              ? 'border-b-2 border-[#6899B0] text-[#5D8799]'
-              : 'text-black hover:text-black'
+              ? 'border-b-2 border-[#6899B0] text-[#6899B0]'
+              : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           {tab}
@@ -194,10 +194,10 @@ const StaffManagement: React.FC = () => {
   const renderOverview = () => (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-black">Staff List</h2>
+        <h2 className="text-xl font-bold text-slate-900">Staff List</h2>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white font-semibold rounded-lg hover:bg-[#5D8799] transition-all shadow-sm"
         >
           <UserPlus size={18} />
           Add Staff
@@ -207,44 +207,44 @@ const StaffManagement: React.FC = () => {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 border-b border-slate-200 text-black text-sm">
-              <th className="p-4">Employee ID</th>
-              <th className="p-4">Name</th>
-              <th className="p-4">Role</th>
-              <th className="p-4">Email</th>
-              <th className="p-4">Actions</th>
+            <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+              <th className="p-4 font-bold">Employee ID</th>
+              <th className="p-4 font-bold">Name</th>
+              <th className="p-4 font-bold">Role</th>
+              <th className="p-4 font-bold">Email</th>
+              <th className="p-4 font-bold">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-slate-100">
             {staffList.map((staff) => (
-              <tr key={staff.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                <td className="p-4 font-medium text-black">{staff.employee_id}</td>
-                <td className="p-4 flex items-center gap-3">
+              <tr key={staff.id} className="hover:bg-slate-50/50 transition-colors">
+                <td className="p-4 font-semibold text-slate-900">{staff.employee_id}</td>
+                <td className="p-4 flex items-center gap-3 font-medium text-slate-700">
                   {staff.profiles?.avatar_url ? (
-                    <img src={staff.profiles.avatar_url} alt="Profile" className="w-8 h-8 rounded-full object-cover border border-slate-200" />
+                    <img src={staff.profiles.avatar_url} alt="Profile" className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-sm" />
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-[#5D8799] font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-[#6899B0]/10 flex items-center justify-center text-[#6899B0] font-bold text-xs shadow-sm border border-[#6899B0]/20">
                       {staff.profiles?.first_name?.[0]}{staff.profiles?.last_name?.[0]}
                     </div>
                   )}
                   {staff.profiles?.first_name} {staff.profiles?.last_name}
                 </td>
                 <td className="p-4">
-                  <span className="px-2.5 py-1 bg-[#E0EEF5] text-[#5D8799] text-xs font-medium rounded-full">
+                  <span className="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold uppercase tracking-wider rounded-md">
                     {staff.profiles?.role}
                   </span>
                 </td>
-                <td className="p-4 text-black">{staff.profiles?.email}</td>
+                <td className="p-4 text-slate-600">{staff.profiles?.email}</td>
                 <td className="p-4 flex gap-2">
-                  <button onClick={() => handleDeleteStaff(staff.id)} className="p-1.5 text-slate-400 hover:text-red-600 rounded">
-                    <Trash2 size={16} />
+                  <button onClick={() => handleDeleteStaff(staff.id)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                    <Trash2 size={18} />
                   </button>
                 </td>
               </tr>
             ))}
             {staffList.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-8 text-center text-black">No staff found.</td>
+                <td colSpan={5} className="p-12 text-center text-slate-500">No staff found.</td>
               </tr>
             )}
           </tbody>
@@ -410,12 +410,17 @@ const StaffManagement: React.FC = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto relative">
-      <h1 className="text-2xl font-bold text-black mb-6">Staff & HR</h1>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-slate-900">Staff & HR</h1>
+        <p className="text-slate-500 text-sm mt-1">Manage employees, track attendance, and oversee schedules.</p>
+      </div>
       
       {renderTabs()}
 
       {loading ? (
-        <p className="text-black">Loading data...</p>
+        <div className="flex justify-center items-center h-64 bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6899B0]"></div>
+        </div>
       ) : (
         <>
           {activeTab === 'overview' && renderOverview()}

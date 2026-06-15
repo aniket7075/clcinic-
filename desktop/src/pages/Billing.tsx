@@ -107,66 +107,71 @@ const Billing: React.FC = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto relative">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">Billing & Revenue</h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Billing & Revenue</h1>
+          <p className="text-slate-500 text-sm mt-1">Manage patient invoices and track pending payments.</p>
+        </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-all font-semibold shadow-sm"
         >
           <Plus size={18} />
           New Invoice
         </button>
       </div>
 
-      <div className="flex space-x-4 mb-6 border-b border-slate-200">
+      <div className="flex space-x-6 mb-8 border-b border-slate-200">
         <button
           onClick={() => setActiveTab('invoices')}
-          className={`pb-3 px-2 font-medium transition-colors ${
-            activeTab === 'invoices' ? 'border-b-2 border-[#6899B0] text-[#5D8799]' : 'text-black hover:text-black'
+          className={`pb-3 font-semibold transition-colors ${
+            activeTab === 'invoices' ? 'border-b-2 border-[#6899B0] text-[#6899B0]' : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           All Invoices
         </button>
         <button
           onClick={() => setActiveTab('pending')}
-          className={`pb-3 px-2 font-medium transition-colors flex items-center gap-2 ${
-            activeTab === 'pending' ? 'border-b-2 border-orange-500 text-orange-600' : 'text-black hover:text-black'
+          className={`pb-3 font-semibold transition-colors flex items-center gap-2 ${
+            activeTab === 'pending' ? 'border-b-2 border-orange-500 text-orange-600' : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           Pending Dues
           {pendingInvoices.length > 0 && (
-            <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full text-xs">{pendingInvoices.length}</span>
+            <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full text-xs font-bold">{pendingInvoices.length}</span>
           )}
         </button>
       </div>
 
       {loading ? (
-        <p className="text-black">Loading billing data...</p>
+        <div className="flex justify-center items-center h-64 bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6899B0]"></div>
+        </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-black text-sm">
-                <th className="p-4">Invoice #</th>
-                <th className="p-4">Date</th>
-                <th className="p-4">Patient</th>
-                <th className="p-4">Amount</th>
-                <th className="p-4">Status</th>
-                <th className="p-4 text-right">Actions</th>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                <th className="p-4 font-bold">Invoice #</th>
+                <th className="p-4 font-bold">Date</th>
+                <th className="p-4 font-bold">Patient</th>
+                <th className="p-4 font-bold">Amount</th>
+                <th className="p-4 font-bold">Status</th>
+                <th className="p-4 font-bold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {displayInvoices.map((inv) => (
-                <tr key={inv.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                  <td className="p-4 font-medium text-black">{inv.invoice_number}</td>
-                  <td className="p-4 text-black">{new Date(inv.created_at).toLocaleDateString()}</td>
-                  <td className="p-4">{inv.patients?.first_name} {inv.patients?.last_name}</td>
-                  <td className="p-4 font-semibold text-black">₹{inv.final_amount}</td>
+                <tr key={inv.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="p-4 font-semibold text-slate-900">{inv.invoice_number}</td>
+                  <td className="p-4 text-slate-600">{new Date(inv.created_at).toLocaleDateString()}</td>
+                  <td className="p-4 text-slate-700 font-medium">{inv.patients?.first_name} {inv.patients?.last_name}</td>
+                  <td className="p-4 font-bold text-slate-900">₹{inv.final_amount}</td>
                   <td className="p-4">
-                    <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                      inv.status === 'PAID' ? 'bg-green-100 text-green-700' :
-                      inv.status === 'PARTIAL' ? 'bg-orange-100 text-orange-700' :
-                      'bg-red-100 text-red-700'
+                    <span className={`px-3 py-1.5 text-xs font-bold rounded-md uppercase tracking-wider ${
+                      inv.status === 'PAID' ? 'bg-green-50 text-green-700 border border-green-200' :
+                      inv.status === 'PARTIAL' ? 'bg-orange-50 text-orange-700 border border-orange-200' :
+                      'bg-red-50 text-red-700 border border-red-200'
                     }`}>
                       {inv.status}
                     </span>
@@ -174,8 +179,8 @@ const Billing: React.FC = () => {
                   <td className="p-4 text-right flex justify-end gap-2">
                     <button 
                       onClick={() => handleDownloadPDF(inv.id)}
-                      className="p-1.5 text-black hover:text-[#6899B0] bg-slate-100 hover:bg-[#E0EEF5] rounded transition-colors"
                       title="Download PDF"
+                      className="p-2 text-slate-600 hover:text-[#6899B0] hover:bg-[#6899B0]/10 rounded-lg transition-colors"
                     >
                       <Download size={16} />
                     </button>

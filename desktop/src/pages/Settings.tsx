@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { Save, Building, Phone, Mail, MapPin, MessageSquare, List } from 'lucide-react';
+import { Save, Building, Phone, Mail, MapPin, MessageSquare, List, CreditCard, CheckCircle2 } from 'lucide-react';
 
 const Settings: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -19,8 +19,18 @@ const Settings: React.FC = () => {
     }
   });
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'templates'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'templates' | 'subscription'>('profile');
   const [templates, setTemplates] = useState<any[]>([]);
+
+  // Subscription state
+  const [activePlan, setActivePlan] = useState<string>('starter');
+  const [subscriptionExpiry, setSubscriptionExpiry] = useState<string>('');
+  
+  // Payment Modal state
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedPlanToUpgrade, setSelectedPlanToUpgrade] = useState<'pro' | 'enterprise'>('pro');
+  const [processingPayment, setProcessingPayment] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const fetchTemplates = async () => {
     try {
@@ -44,6 +54,12 @@ const Settings: React.FC = () => {
           taxId: res.data.gst_number || '',
           configData: { enableNotifications: true, enableWhatsappReminders: true, theme: 'light' }
         });
+        
+        setActivePlan(res.data.subscription_plan || 'starter');
+        if (res.data.subscription_expiry) {
+          const date = new Date(res.data.subscription_expiry);
+          setSubscriptionExpiry(date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
+        }
       }
     } catch (err) {
       console.error('Error fetching settings profile:', err);
@@ -95,6 +111,42 @@ const Settings: React.FC = () => {
     }
   };
 
+  const handleUpgradeClick = (plan: 'pro' | 'enterprise') => {
+    setSelectedPlanToUpgrade(plan);
+    setIsPaymentModalOpen(true);
+    setPaymentSuccess(false);
+  };
+
+  const processPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProcessingPayment(true);
+    
+    try {
+      // Simulate network delay for payment processing
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const res = await api.post('/settings/subscription/upgrade', {
+        plan: selectedPlanToUpgrade
+      });
+      
+      setActivePlan(res.data.clinic.subscription_plan);
+      const date = new Date(res.data.clinic.subscription_expiry);
+      setSubscriptionExpiry(date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }));
+      
+      setPaymentSuccess(true);
+      setTimeout(() => {
+        setIsPaymentModalOpen(false);
+        setProcessingPayment(false);
+        setPaymentSuccess(false);
+      }, 2000);
+      
+    } catch (err) {
+      console.error('Error processing payment:', err);
+      alert('Payment failed. Please try again.');
+      setProcessingPayment(false);
+    }
+  };
+
   if (loading) {
     return <div className="p-8 text-black">Loading settings...</div>;
   }
@@ -114,14 +166,20 @@ const Settings: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('templates')}
-          className={`pb-3 px-2 font-medium flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'templates' ? 'border-[#6899B0] text-[#6899B0]' : 'border-transparent text-black hover:text-black'}`}
+          className={`pb-3 px-2 font-medium flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'templates' ? 'border-[#6899B0] text-[#6899B0]' : 'border-transparent text-slate-500 hover:text-slate-900'}`}
         >
           <MessageSquare size={18} /> Communication Templates
+        </button>
+        <button
+          onClick={() => setActiveTab('subscription')}
+          className={`pb-3 px-2 font-medium flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'subscription' ? 'border-[#6899B0] text-[#6899B0]' : 'border-transparent text-slate-500 hover:text-slate-900'}`}
+        >
+          <CreditCard size={18} /> Subscription & Billing
         </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        {activeTab === 'profile' ? (
+        {activeTab === 'profile' && (
           <>
             <div className="border-b border-slate-200 px-6 py-4 bg-slate-50">
               <h2 className="font-semibold text-black flex items-center gap-2">
@@ -246,7 +304,9 @@ const Settings: React.FC = () => {
           </div>
         </form>
         </>
-        ) : (
+        )}
+        
+        {activeTab === 'templates' && (
           <div className="p-6">
             <div className="mb-6">
                <h2 className="text-lg font-bold text-black mb-2 flex items-center gap-2"><List size={20} className="text-[#6899B0]"/> Automated Templates</h2>
@@ -298,7 +358,150 @@ const Settings: React.FC = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'subscription' && (
+          <div className="p-6">
+            <div className="mb-8">
+               <h2 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2"><CreditCard size={24} className="text-[#6899B0]"/> Subscription Plan</h2>
+               <p className="text-slate-500">Manage your current plan and billing details.</p>
+            </div>
+            
+            {/* Current Plan */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-10 flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <h3 className="text-lg font-bold text-slate-900 capitalize">{activePlan} Plan</h3>
+                  <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider rounded-full">Active</span>
+                </div>
+                <p className="text-slate-500 font-medium">Next billing date is {subscriptionExpiry || 'July 1st, 2026'}.</p>
+              </div>
+              <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+                Cancel Plan
+              </button>
+            </div>
+
+            {/* Upgrade Options */}
+            <h3 className="text-lg font-bold text-slate-900 mb-6">Upgrade Options</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="border-2 border-[#6899B0] bg-[#6899B0]/5 rounded-2xl p-6 relative">
+                <div className="absolute top-0 right-0 bg-[#6899B0] text-white px-3 py-1 rounded-bl-lg rounded-tr-xl text-xs font-bold uppercase tracking-wider">Recommended</div>
+                <h4 className="text-xl font-bold text-slate-900 mb-1">Professional</h4>
+                <p className="text-2xl font-black text-[#6899B0] mb-4">₹3,499<span className="text-sm font-medium text-slate-500">/mo</span></p>
+                <ul className="space-y-3 mb-6">
+                  {['Up to 5 Staff Accounts', 'Advanced Inventory Management', 'Staff Attendance & Leaves'].map((item, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                      <CheckCircle2 size={16} className="text-[#6899B0]" /> {item}
+                    </li>
+                  ))}
+                </ul>
+                <button 
+                  onClick={() => handleUpgradeClick('pro')}
+                  disabled={activePlan === 'pro' || activePlan === 'enterprise'}
+                  className={`w-full py-2.5 font-bold rounded-lg transition-colors shadow-sm ${activePlan === 'pro' || activePlan === 'enterprise' ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-[#6899B0] text-white hover:bg-[#5D8799]'}`}
+                >
+                  {activePlan === 'pro' || activePlan === 'enterprise' ? 'Current Plan' : 'Upgrade to Pro'}
+                </button>
+              </div>
+
+              <div className="border border-slate-200 bg-white rounded-2xl p-6">
+                <h4 className="text-xl font-bold text-slate-900 mb-1">Enterprise</h4>
+                <p className="text-2xl font-black text-slate-900 mb-4">₹6,999<span className="text-sm font-medium text-slate-500">/mo</span></p>
+                <ul className="space-y-3 mb-6">
+                  {['Unlimited Staff Accounts', 'Multi-Clinic Management', 'Dedicated Account Manager'].map((item, i) => (
+                    <li key={i} className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                      <CheckCircle2 size={16} className="text-slate-400" /> {item}
+                    </li>
+                  ))}
+                </ul>
+                <button 
+                  onClick={() => handleUpgradeClick('enterprise')}
+                  disabled={activePlan === 'enterprise'}
+                  className={`w-full py-2.5 font-bold rounded-lg transition-colors shadow-sm border ${activePlan === 'enterprise' ? 'bg-slate-200 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'}`}
+                >
+                  {activePlan === 'enterprise' ? 'Current Plan' : 'Upgrade to Enterprise'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Payment Modal */}
+      {isPaymentModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <CreditCard className="text-[#6899B0]" />
+                Secure Checkout
+              </h2>
+              <button onClick={() => !processingPayment && setIsPaymentModalOpen(false)} className="text-slate-400 hover:text-slate-600">×</button>
+            </div>
+            
+            {paymentSuccess ? (
+              <div className="p-10 text-center">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle2 size={40} className="text-green-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Payment Successful!</h3>
+                <p className="text-slate-500">Your clinic has been upgraded to the {selectedPlanToUpgrade.toUpperCase()} plan.</p>
+              </div>
+            ) : (
+              <form onSubmit={processPayment} className="p-6">
+                <div className="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200 flex justify-between items-center">
+                  <div>
+                    <p className="text-sm text-slate-500 font-medium">Selected Plan</p>
+                    <p className="font-bold text-slate-800 capitalize">{selectedPlanToUpgrade} Plan</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-slate-500 font-medium">Amount Due</p>
+                    <p className="text-xl font-black text-[#6899B0]">{selectedPlanToUpgrade === 'pro' ? '₹3,499' : '₹6,999'}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Card Number</label>
+                    <input type="text" placeholder="0000 0000 0000 0000" className="w-full p-3 border border-slate-300 rounded-lg outline-none focus:border-[#6899B0]" required />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Expiry</label>
+                      <input type="text" placeholder="MM/YY" className="w-full p-3 border border-slate-300 rounded-lg outline-none focus:border-[#6899B0]" required />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">CVC</label>
+                      <input type="text" placeholder="123" className="w-full p-3 border border-slate-300 rounded-lg outline-none focus:border-[#6899B0]" required />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Name on Card</label>
+                    <input type="text" placeholder="John Doe" className="w-full p-3 border border-slate-300 rounded-lg outline-none focus:border-[#6899B0]" required />
+                  </div>
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={processingPayment}
+                  className="w-full py-3.5 bg-[#6899B0] text-white font-bold rounded-xl hover:bg-[#5D8799] disabled:opacity-70 transition-all flex justify-center items-center gap-2"
+                >
+                  {processingPayment ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    `Pay ${selectedPlanToUpgrade === 'pro' ? '₹3,499' : '₹6,999'}`
+                  )}
+                </button>
+                <p className="text-center text-xs text-slate-400 mt-4 flex items-center justify-center gap-1">
+                  🔒 Payments are secure and encrypted.
+                </p>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

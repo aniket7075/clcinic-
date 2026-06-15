@@ -100,3 +100,36 @@ export const getClinics = async (req: AuthRequest, res: Response): Promise<void>
     res.status(500).json({ error: err.message });
   }
 };
+
+export const upgradeSubscription = async (req: AuthRequest, res: Response): Promise<void> => {
+  const { plan } = req.body;
+  try {
+    // In a real app, you would verify the Stripe/Razorpay payment intent here.
+    // Since this is a mock flow, we just update the database directly.
+    const validPlans = ['starter', 'pro', 'enterprise'];
+    if (!validPlans.includes(plan)) {
+      res.status(400).json({ error: 'Invalid subscription plan' });
+      return;
+    }
+
+    // Set expiry to 1 month from now
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+    const { data, error } = await supabase
+      .from('clinics')
+      .update({
+        subscription_plan: plan,
+        subscription_status: 'active',
+        subscription_expiry: nextMonth.toISOString()
+      })
+      .eq('id', req.user.clinic_id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(200).json({ message: 'Subscription upgraded successfully', clinic: data });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};

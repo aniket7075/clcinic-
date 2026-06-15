@@ -29,9 +29,10 @@ const Dashboard: React.FC = () => {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
     
-    const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'admin';
+    const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'ADMIN' || user?.role === 'admin' || user?.role === 'CLINIC_ADMIN';
     const isDoctor = user?.role === 'DOCTOR' || user?.role === 'doctor';
     const isReceptionist = user?.role === 'RECEPTIONIST' || user?.role === 'receptionist';
+    const isSuperAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'SUPERADMIN';
     const isHome = location.pathname === '/';
   
     useEffect(() => {
@@ -80,10 +81,12 @@ const Dashboard: React.FC = () => {
             <Users size={20} strokeWidth={location.pathname.startsWith('/patients') ? 2.5 : 2} />
             <span>Patients</span>
           </Link>
-          <Link to="/billing" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/billing') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
-            <IndianRupee size={20} strokeWidth={location.pathname.startsWith('/billing') ? 2.5 : 2} />
-            <span>Billing</span>
-          </Link>
+          {(isAdmin || isReceptionist) && (
+            <Link to="/billing" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/billing') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
+              <IndianRupee size={20} strokeWidth={location.pathname.startsWith('/billing') ? 2.5 : 2} />
+              <span>Billing</span>
+            </Link>
+          )}
           {isAdmin && (
             <>
               <Link to="/expenses" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/expenses') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
@@ -106,10 +109,12 @@ const Dashboard: React.FC = () => {
           <div className="pt-6 pb-2 px-4">
             <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest opacity-80">Personal</p>
           </div>
-          <Link to="/schedule" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/schedule') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'} w-full text-left`}>
-            <Calendar size={20} strokeWidth={location.pathname.startsWith('/schedule') ? 2.5 : 2} />
-            <span>My Schedule</span>
-          </Link>
+          {(isAdmin || isDoctor) && (
+            <Link to="/schedule" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/schedule') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'} w-full text-left`}>
+              <Calendar size={20} strokeWidth={location.pathname.startsWith('/schedule') ? 2.5 : 2} />
+              <span>My Schedule</span>
+            </Link>
+          )}
           <Link to="/notifications" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/notifications') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'} w-full text-left`}>
             <Bell size={20} strokeWidth={location.pathname.startsWith('/notifications') ? 2.5 : 2} />
             <span>Notifications</span>
@@ -133,7 +138,7 @@ const Dashboard: React.FC = () => {
           )}
           {isAdmin && (
             <>
-              {user?.role === 'SUPER_ADMIN' && (
+              {isSuperAdmin && (
                 <Link to="/manage-clinics" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/manage-clinics') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                   <Building2 size={20} strokeWidth={location.pathname.startsWith('/manage-clinics') ? 2.5 : 2} />
                   <span>Manage Clinics</span>

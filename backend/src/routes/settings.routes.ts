@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getClinicSettings, updateClinicSettings, getNotificationTemplates, upsertNotificationTemplate, getAuditLogs, getClinics } from '../controllers/settings.controller';
+import { getClinicSettings, updateClinicSettings, getNotificationTemplates, upsertNotificationTemplate, getAuditLogs, getClinics, upgradeSubscription } from '../controllers/settings.controller';
 import { authenticateToken, requireRole } from '../middleware/auth.middleware';
 
 const router = Router();
@@ -13,6 +13,7 @@ router.get('/clinics', getClinics);
 
 // Writing / Managing restricted to Admins
 router.put('/clinic', requireRole(['SUPER_ADMIN', 'CLINIC_ADMIN']), updateClinicSettings);
+router.post('/subscription/upgrade', requireRole(['SUPER_ADMIN', 'CLINIC_ADMIN']), upgradeSubscription);
 
 router.get('/notifications', requireRole(['SUPER_ADMIN', 'CLINIC_ADMIN']), getNotificationTemplates);
 router.post('/notifications', requireRole(['SUPER_ADMIN', 'CLINIC_ADMIN']), upsertNotificationTemplate);

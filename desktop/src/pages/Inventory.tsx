@@ -86,22 +86,25 @@ const Inventory: React.FC = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto relative">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">Inventory Management</h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Inventory Management</h1>
+          <p className="text-slate-500 text-sm mt-1">Track clinic supplies, manage stock levels, and organize suppliers.</p>
+        </div>
         <button 
           onClick={() => activeTab === 'items' ? setShowItemModal(true) : setShowSupplierModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-all font-semibold shadow-sm"
         >
           <Plus size={18} />
           {activeTab === 'items' ? 'Add Item' : 'Add Supplier'}
         </button>
       </div>
 
-      <div className="flex space-x-4 mb-6 border-b border-slate-200">
+      <div className="flex space-x-6 mb-8 border-b border-slate-200">
         <button
           onClick={() => setActiveTab('items')}
-          className={`pb-3 px-2 font-medium transition-colors flex items-center gap-2 ${
-            activeTab === 'items' ? 'border-b-2 border-[#6899B0] text-[#5D8799]' : 'text-black hover:text-black'
+          className={`pb-3 font-semibold transition-colors flex items-center gap-2 ${
+            activeTab === 'items' ? 'border-b-2 border-[#6899B0] text-[#6899B0]' : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           <Package size={18} />
@@ -109,8 +112,8 @@ const Inventory: React.FC = () => {
         </button>
         <button
           onClick={() => setActiveTab('suppliers')}
-          className={`pb-3 px-2 font-medium transition-colors flex items-center gap-2 ${
-            activeTab === 'suppliers' ? 'border-b-2 border-[#6899B0] text-[#5D8799]' : 'text-black hover:text-black'
+          className={`pb-3 font-semibold transition-colors flex items-center gap-2 ${
+            activeTab === 'suppliers' ? 'border-b-2 border-[#6899B0] text-[#6899B0]' : 'text-slate-500 hover:text-slate-900'
           }`}
         >
           <Truck size={18} />
@@ -119,40 +122,42 @@ const Inventory: React.FC = () => {
       </div>
 
       {loading ? (
-        <p className="text-black">Loading data...</p>
+        <div className="flex justify-center items-center h-64 bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6899B0]"></div>
+        </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           {activeTab === 'items' && (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-black text-sm">
-                  <th className="p-4">Item Name</th>
-                  <th className="p-4">Category</th>
-                  <th className="p-4">Quantity</th>
-                  <th className="p-4">Unit Price</th>
-                  <th className="p-4">Expiry Date</th>
-                  <th className="p-4">Status</th>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                  <th className="p-4 font-bold">Item Name</th>
+                  <th className="p-4 font-bold">Category</th>
+                  <th className="p-4 font-bold">Quantity</th>
+                  <th className="p-4 font-bold">Unit Price</th>
+                  <th className="p-4 font-bold">Expiry Date</th>
+                  <th className="p-4 font-bold">Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {items.map((item) => {
                   const isLowStock = item.quantity <= (item.low_stock_threshold || 0);
                   return (
-                    <tr key={item.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                      <td className="p-4 font-medium text-black">{item.item_name}</td>
-                      <td className="p-4 text-black">{item.category}</td>
-                      <td className="p-4 font-semibold text-black">
+                    <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="p-4 font-semibold text-slate-900">{item.item_name}</td>
+                      <td className="p-4 text-slate-600">{item.category}</td>
+                      <td className="p-4 font-bold text-slate-900">
                         {item.quantity} {item.unit}
                       </td>
-                      <td className="p-4 text-black">₹{item.unit_price}</td>
-                      <td className="p-4 text-black">{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : 'N/A'}</td>
+                      <td className="p-4 text-slate-600">₹{item.unit_price}</td>
+                      <td className="p-4 text-slate-600">{item.expiry_date ? new Date(item.expiry_date).toLocaleDateString() : 'N/A'}</td>
                       <td className="p-4">
                         {isLowStock ? (
-                          <span className="flex items-center gap-1 text-xs font-medium text-red-600 bg-red-50 px-2 py-1 rounded-full w-max">
-                            <AlertTriangle size={14} /> Low Stock
+                          <span className="flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 px-3 py-1 rounded-md w-max uppercase tracking-wider">
+                            <AlertTriangle size={14} strokeWidth={2.5} /> Low Stock
                           </span>
                         ) : (
-                          <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full w-max inline-block text-center">
+                          <span className="text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-md w-max inline-block text-center uppercase tracking-wider">
                             In Stock
                           </span>
                         )}
@@ -162,7 +167,11 @@ const Inventory: React.FC = () => {
                 })}
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-black">No items found.</td>
+                    <td colSpan={6} className="p-12 text-center text-slate-500">
+                      <Package size={48} className="mx-auto text-slate-300 mb-4" />
+                      <h3 className="text-lg font-bold text-slate-900 mb-1">No items found</h3>
+                      <p>Add some inventory items to see them here.</p>
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -172,27 +181,31 @@ const Inventory: React.FC = () => {
           {activeTab === 'suppliers' && (
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-black text-sm">
-                  <th className="p-4">Supplier Name</th>
-                  <th className="p-4">Contact Person</th>
-                  <th className="p-4">Email</th>
-                  <th className="p-4">Phone</th>
-                  <th className="p-4">Rating</th>
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                  <th className="p-4 font-bold">Supplier Name</th>
+                  <th className="p-4 font-bold">Contact Person</th>
+                  <th className="p-4 font-bold">Email</th>
+                  <th className="p-4 font-bold">Phone</th>
+                  <th className="p-4 font-bold">Rating</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {suppliers.map((sup) => (
-                  <tr key={sup.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                    <td className="p-4 font-medium text-black">{sup.supplier_name}</td>
-                    <td className="p-4 text-black">{sup.contact_person}</td>
-                    <td className="p-4 text-black">{sup.email}</td>
-                    <td className="p-4 text-black">{sup.phone}</td>
-                    <td className="p-4 text-black">{sup.rating || 'N/A'}/5</td>
+                  <tr key={sup.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="p-4 font-semibold text-slate-900">{sup.supplier_name}</td>
+                    <td className="p-4 text-slate-700 font-medium">{sup.contact_person}</td>
+                    <td className="p-4 text-slate-600">{sup.email}</td>
+                    <td className="p-4 text-slate-600">{sup.phone}</td>
+                    <td className="p-4 text-slate-600 font-medium">{sup.rating || 'N/A'}/5</td>
                   </tr>
                 ))}
                 {suppliers.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-black">No suppliers found.</td>
+                    <td colSpan={5} className="p-12 text-center text-slate-500">
+                      <Truck size={48} className="mx-auto text-slate-300 mb-4" />
+                      <h3 className="text-lg font-bold text-slate-900 mb-1">No suppliers found</h3>
+                      <p>Add some suppliers to see them here.</p>
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -203,97 +216,105 @@ const Inventory: React.FC = () => {
 
       {/* Add Item Modal */}
       {showItemModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-6">Add New Item</h2>
-            <form onSubmit={handleItemSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Item Name</label>
-                  <input required type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={itemFormData.item_name} onChange={e => setItemFormData({...itemFormData, item_name: e.target.value})} />
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 shrink-0">
+              <h2 className="text-xl font-bold text-slate-900">Add New Item</h2>
+            </div>
+            <div className="p-6 overflow-y-auto">
+              <form onSubmit={handleItemSubmit} className="space-y-5">
+                <div className="grid grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Item Name</label>
+                    <input required type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.item_name} onChange={e => setItemFormData({...itemFormData, item_name: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Category</label>
+                    <input required type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.category} onChange={e => setItemFormData({...itemFormData, category: e.target.value})} />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Category</label>
-                  <input required type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={itemFormData.category} onChange={e => setItemFormData({...itemFormData, category: e.target.value})} />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Quantity</label>
-                  <input required type="number" min="0" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={itemFormData.quantity} onChange={e => setItemFormData({...itemFormData, quantity: Number(e.target.value)})} />
+                <div className="grid grid-cols-3 gap-5">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Quantity</label>
+                    <input required type="number" min="0" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.quantity} onChange={e => setItemFormData({...itemFormData, quantity: Number(e.target.value)})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Unit</label>
+                    <input required type="text" placeholder="e.g. pcs, boxes" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.unit} onChange={e => setItemFormData({...itemFormData, unit: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Price (₹)</label>
+                    <input required type="number" min="0" step="0.01" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.unit_price} onChange={e => setItemFormData({...itemFormData, unit_price: Number(e.target.value)})} />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Unit</label>
-                  <input required type="text" placeholder="e.g. pcs, boxes" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={itemFormData.unit} onChange={e => setItemFormData({...itemFormData, unit: e.target.value})} />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Unit Price (₹)</label>
-                  <input required type="number" min="0" step="0.01" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={itemFormData.unit_price} onChange={e => setItemFormData({...itemFormData, unit_price: Number(e.target.value)})} />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Low Stock Threshold</label>
-                  <input required type="number" min="0" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={itemFormData.low_stock_threshold} onChange={e => setItemFormData({...itemFormData, low_stock_threshold: Number(e.target.value)})} />
+                <div className="grid grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Low Stock Alert</label>
+                    <input required type="number" min="0" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.low_stock_threshold} onChange={e => setItemFormData({...itemFormData, low_stock_threshold: Number(e.target.value)})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Expiry Date (Opt)</label>
+                    <input type="date" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.expiry_date} onChange={e => setItemFormData({...itemFormData, expiry_date: e.target.value})} />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Expiry Date (Optional)</label>
-                  <input type="date" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={itemFormData.expiry_date} onChange={e => setItemFormData({...itemFormData, expiry_date: e.target.value})} />
-                </div>
-              </div>
 
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setShowItemModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button type="submit" disabled={submitting} className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] disabled:opacity-50">
-                  {submitting ? 'Adding...' : 'Add Item'}
-                </button>
-              </div>
-            </form>
+                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+                  <button type="button" onClick={() => setShowItemModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="submit" disabled={submitting} className="px-5 py-2.5 bg-[#6899B0] text-white font-bold rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-all shadow-sm">
+                    {submitting ? 'Adding...' : 'Add Item'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
 
       {/* Add Supplier Modal */}
       {showSupplierModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-6">Add New Supplier</h2>
-            <form onSubmit={handleSupplierSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Supplier/Company Name</label>
-                <input required type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={supplierFormData.supplier_name} onChange={e => setSupplierFormData({...supplierFormData, supplier_name: e.target.value})} />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 shrink-0">
+              <h2 className="text-xl font-bold text-slate-900">Add New Supplier</h2>
+            </div>
+            <div className="p-6 overflow-y-auto">
+              <form onSubmit={handleSupplierSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Contact Person</label>
-                  <input type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={supplierFormData.contact_person} onChange={e => setSupplierFormData({...supplierFormData, contact_person: e.target.value})} />
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Supplier/Company Name</label>
+                  <input required type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={supplierFormData.supplier_name} onChange={e => setSupplierFormData({...supplierFormData, supplier_name: e.target.value})} />
                 </div>
+                
+                <div className="grid grid-cols-2 gap-5">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Contact Person</label>
+                    <input type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={supplierFormData.contact_person} onChange={e => setSupplierFormData({...supplierFormData, contact_person: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Phone</label>
+                    <input type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={supplierFormData.phone} onChange={e => setSupplierFormData({...supplierFormData, phone: e.target.value})} />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-sm font-medium mb-1">Phone</label>
-                  <input type="text" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={supplierFormData.phone} onChange={e => setSupplierFormData({...supplierFormData, phone: e.target.value})} />
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Email</label>
+                  <input type="email" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={supplierFormData.email} onChange={e => setSupplierFormData({...supplierFormData, email: e.target.value})} />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Email</label>
-                <input type="email" className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={supplierFormData.email} onChange={e => setSupplierFormData({...supplierFormData, email: e.target.value})} />
-              </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Address</label>
+                  <textarea className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900 min-h-[100px]" value={supplierFormData.address} onChange={e => setSupplierFormData({...supplierFormData, address: e.target.value})} />
+                </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Address</label>
-                <textarea className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" value={supplierFormData.address} onChange={e => setSupplierFormData({...supplierFormData, address: e.target.value})} />
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setShowSupplierModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button type="submit" disabled={submitting} className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] disabled:opacity-50">
-                  {submitting ? 'Adding...' : 'Add Supplier'}
-                </button>
-              </div>
-            </form>
+                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+                  <button type="button" onClick={() => setShowSupplierModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="submit" disabled={submitting} className="px-5 py-2.5 bg-[#6899B0] text-white font-bold rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-all shadow-sm">
+                    {submitting ? 'Adding...' : 'Add Supplier'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

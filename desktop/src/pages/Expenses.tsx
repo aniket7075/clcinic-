@@ -62,13 +62,16 @@ const Expenses: React.FC = () => {
 
   return (
     <div className="p-8 max-w-7xl mx-auto relative">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black flex items-center gap-2">
-          <IndianRupee className="text-[#6899B0]" /> Expense Management
-        </h1>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <IndianRupee className="text-[#6899B0]" size={28} /> Expense Management
+          </h1>
+          <p className="text-slate-500 text-sm mt-1">Track and manage your clinic's operational expenses.</p>
+        </div>
         <button 
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-colors font-medium shadow-sm"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-all font-semibold shadow-sm"
         >
           <Plus size={18} />
           Record Expense
@@ -76,115 +79,130 @@ const Expenses: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="p-12 text-center text-slate-400 font-medium animate-pulse">Loading expenses...</div>
+        <div className="flex justify-center items-center h-64 bg-white rounded-xl shadow-sm border border-slate-200">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6899B0]"></div>
+        </div>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="grid grid-cols-5 bg-slate-50 border-b border-slate-200 p-4 font-bold text-slate-500 text-xs uppercase tracking-wider">
-            <div>Date</div>
-            <div>Category</div>
-            <div>Description</div>
-            <div>Amount</div>
-            <div className="text-right">Actions</div>
-          </div>
-          <div className="divide-y divide-slate-100">
-            {expenses.map((expense) => (
-              <div key={expense.id} className="grid grid-cols-5 p-4 items-center hover:bg-slate-50 transition-colors">
-                <div className="font-medium text-black flex items-center gap-2">
-                  <Calendar size={14} className="text-slate-400"/>
-                  {new Date(expense.expense_date).toLocaleDateString()}
-                </div>
-                <div>
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide ${
-                    expense.category === 'SALARY' ? 'bg-indigo-100 text-indigo-700' :
-                    expense.category === 'EQUIPMENT' ? 'bg-orange-100 text-orange-700' :
-                    expense.category === 'RENT' ? 'bg-blue-100 text-blue-700' :
-                    'bg-slate-100 text-slate-700'
-                  }`}>
-                    {expense.category}
-                  </span>
-                </div>
-                <div className="text-sm text-slate-600 truncate max-w-[200px]" title={expense.description}>
-                  {expense.description || '-'}
-                </div>
-                <div className="font-extrabold text-black">
-                  ₹ {Number(expense.amount).toLocaleString()}
-                </div>
-                <div className="flex justify-end gap-2">
-                  <button 
-                    onClick={() => handleDelete(expense.id)} 
-                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-            {expenses.length === 0 && (
-              <div className="p-12 text-center text-slate-500 font-medium">No expenses recorded yet.</div>
-            )}
-          </div>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                <th className="p-4 font-bold">Date</th>
+                <th className="p-4 font-bold">Category</th>
+                <th className="p-4 font-bold">Description</th>
+                <th className="p-4 font-bold">Amount</th>
+                <th className="p-4 font-bold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {expenses.map((expense) => (
+                <tr key={expense.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="p-4 font-semibold text-slate-900 flex items-center gap-2">
+                    <Calendar size={16} className="text-[#6899B0]"/>
+                    {new Date(expense.expense_date).toLocaleDateString()}
+                  </td>
+                  <td className="p-4">
+                    <span className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider border ${
+                      expense.category === 'SALARY' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
+                      expense.category === 'EQUIPMENT' ? 'bg-orange-50 text-orange-700 border-orange-200' :
+                      expense.category === 'RENT' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      'bg-slate-50 text-slate-700 border-slate-200'
+                    }`}>
+                      {expense.category}
+                    </span>
+                  </td>
+                  <td className="p-4 text-slate-600 truncate max-w-[200px]" title={expense.description}>
+                    {expense.description || '-'}
+                  </td>
+                  <td className="p-4 font-bold text-slate-900">
+                    ₹ {Number(expense.amount).toLocaleString()}
+                  </td>
+                  <td className="p-4 flex justify-end gap-2">
+                    <button 
+                      onClick={() => handleDelete(expense.id)} 
+                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {expenses.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="p-12 text-center text-slate-500">
+                    <IndianRupee size={48} className="mx-auto text-slate-300 mb-4" />
+                    <h3 className="text-lg font-bold text-slate-900 mb-1">No expenses found</h3>
+                    <p>Record your first expense to see it here.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       )}
 
       {/* Add Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-xl font-bold text-black mb-4 border-b border-slate-100 pb-2">Record New Expense</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><Tag size={14}/> Category</label>
-                <select 
-                  required 
-                  className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none font-medium text-black bg-slate-50"
-                  value={formData.category}
-                  onChange={e => setFormData({...formData, category: e.target.value})}
-                >
-                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
+            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 shrink-0">
+              <h2 className="text-xl font-bold text-slate-900">Record New Expense</h2>
+            </div>
+            <div className="p-6 overflow-y-auto">
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><Tag size={16} className="text-[#6899B0]"/> Category</label>
+                  <select 
+                    required 
+                    className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none font-medium text-slate-900 bg-white transition-all"
+                    value={formData.category}
+                    onChange={e => setFormData({...formData, category: e.target.value})}
+                  >
+                    {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><IndianRupee size={14}/> Amount</label>
-                <input 
-                  required 
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none font-medium text-black bg-slate-50"
-                  value={formData.amount}
-                  onChange={e => setFormData({...formData, amount: e.target.value})}
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><IndianRupee size={16} className="text-[#6899B0]"/> Amount</label>
+                  <input 
+                    required 
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none font-medium text-slate-900 bg-white transition-all"
+                    value={formData.amount}
+                    onChange={e => setFormData({...formData, amount: e.target.value})}
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><Calendar size={14}/> Date</label>
-                <input 
-                  required 
-                  type="date"
-                  className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none font-medium text-black bg-slate-50"
-                  value={formData.expense_date}
-                  onChange={e => setFormData({...formData, expense_date: e.target.value})}
-                />
-              </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><Calendar size={16} className="text-[#6899B0]"/> Date</label>
+                  <input 
+                    required 
+                    type="date"
+                    className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none font-medium text-slate-900 bg-white transition-all"
+                    value={formData.expense_date}
+                    onChange={e => setFormData({...formData, expense_date: e.target.value})}
+                  />
+                </div>
 
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><FileText size={14}/> Description</label>
-                <textarea 
-                  className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none text-black bg-slate-50"
-                  rows={3}
-                  value={formData.description}
-                  onChange={e => setFormData({...formData, description: e.target.value})}
-                ></textarea>
-              </div>
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><FileText size={16} className="text-[#6899B0]"/> Description</label>
+                  <textarea 
+                    className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none font-medium text-slate-900 bg-white transition-all min-h-[100px]"
+                    value={formData.description}
+                    onChange={e => setFormData({...formData, description: e.target.value})}
+                  ></textarea>
+                </div>
 
-              <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
-                <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
-                <button type="submit" disabled={submitting} className="px-5 py-2 bg-[#6899B0] font-bold text-white rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-colors shadow-sm">
-                  {submitting ? 'Saving...' : 'Save Expense'}
-                </button>
-              </div>
-            </form>
+                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
+                  <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="submit" disabled={submitting} className="px-5 py-2.5 bg-[#6899B0] font-bold text-white rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-all shadow-sm">
+                    {submitting ? 'Saving...' : 'Save Expense'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
