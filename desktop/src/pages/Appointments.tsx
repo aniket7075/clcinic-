@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { Clock, User, Plus } from 'lucide-react';
+import { Clock, User, Plus, MessageCircle } from 'lucide-react';
 
 const Appointments: React.FC = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -84,6 +84,29 @@ const Appointments: React.FC = () => {
     }
   };
 
+  const sendWhatsAppReminder = (apt: any) => {
+    if (!apt.patients?.mobile) {
+      alert("Patient mobile number not available.");
+      return;
+    }
+    
+    // Format date and time
+    const aptDate = new Date(apt.appointment_date).toLocaleDateString('mr-IN');
+    const aptTime = apt.start_time.substring(0, 5);
+    const doctorName = apt.profiles?.last_name || '';
+    const patientName = apt.patients?.first_name || 'Patient';
+    
+    // Create Marathi message
+    const message = `नमस्कार ${patientName},\n\nतुमची Q DENT Clinic मध्ये ${aptDate} ला ${aptTime} वाजता डॉ. ${doctorName} यांच्याकडे अपॉईंटमेंट आहे. कृपया वेळेवर उपस्थित राहा.\n\nधन्यवाद!\n- Q DENT Clinic`;
+    
+    // Clean phone number (add 91 if not present, though assuming 10 digits for India)
+    let phone = apt.patients.mobile.replace(/\D/g, '');
+    if (phone.length === 10) phone = '91' + phone;
+    
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   return (
     <div className="p-8 max-w-7xl mx-auto relative">
       <div className="flex justify-between items-center mb-6">
@@ -137,6 +160,13 @@ const Appointments: React.FC = () => {
                     <>
                       <button onClick={() => updateStatus(apt.id, 'COMPLETED')} className="px-2 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100">Complete</button>
                       <button onClick={() => updateStatus(apt.id, 'CANCELLED')} className="px-2 py-1 bg-red-50 text-red-700 rounded hover:bg-red-100">Cancel</button>
+                      <button 
+                        onClick={() => sendWhatsAppReminder(apt)} 
+                        className="px-2 py-1 bg-[#25D366]/10 text-[#25D366] rounded hover:bg-[#25D366]/20 flex items-center gap-1 font-medium"
+                        title="Send WhatsApp Reminder"
+                      >
+                        <MessageCircle size={14} />
+                      </button>
                     </>
                   )}
                 </div>

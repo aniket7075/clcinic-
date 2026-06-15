@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setCredentials, setLoading } from '../store/authSlice';
 import api, { setAuthToken } from '../api/axios';
-import { Stethoscope } from 'lucide-react';
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');

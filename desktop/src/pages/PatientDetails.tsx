@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import api from '../api/axios';
-import { Plus, Trash2, Pill, FileText, Download, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, Pill, FileText, Download, MessageCircle } from 'lucide-react';
 
 const ToothIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -13,7 +13,6 @@ const ToothIcon = ({ className }: { className?: string }) => (
 
 const PatientDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [patient, setPatient] = useState<any>(null);
   const [timeline, setTimeline] = useState<{history: any[], prescriptions: any[], appointments: any[]}>({ history: [], prescriptions: [], appointments: [] });
   const [dentalChart, setDentalChart] = useState<any[]>([]);
@@ -161,6 +160,20 @@ const PatientDetails: React.FC = () => {
     }
   };
 
+  const sendWhatsAppMessage = () => {
+    if (!patient?.mobile) return;
+    
+    // Clean phone number (add 91 if not present)
+    let phone = patient.mobile.replace(/\D/g, '');
+    if (phone.length === 10) phone = '91' + phone;
+    
+    // Simple greeting message
+    const message = `नमस्कार ${patient.first_name},\n\nQ DENT Clinic मधून संपर्क साधत आहोत. `;
+    
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
   if (!patient) return <div className="p-8">Loading patient details...</div>;
 
   return (
@@ -172,7 +185,16 @@ const PatientDetails: React.FC = () => {
           </h1>
           <div className="text-black space-y-1">
             <p><span className="font-medium text-black">Case Number:</span> {patient.case_number}</p>
-            <p><span className="font-medium text-black">Mobile:</span> {patient.mobile}</p>
+            <div className="flex items-center gap-2">
+              <p><span className="font-medium text-black">Mobile:</span> {patient.mobile}</p>
+              <button 
+                onClick={sendWhatsAppMessage}
+                className="text-[#25D366] hover:text-[#1da851] p-1 rounded-full hover:bg-[#25D366]/10 transition-colors"
+                title="Message on WhatsApp"
+              >
+                <MessageCircle size={16} />
+              </button>
+            </div>
             <p><span className="font-medium text-black">Age/Gender:</span> {patient.age} / {patient.gender}</p>
           </div>
         </div>
