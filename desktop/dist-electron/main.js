@@ -1,24 +1,31 @@
-import { BrowserWindow as e, app as t } from "electron";
-import * as n from "path";
+import { BrowserWindow, app } from "electron";
+import * as path from "path";
 //#region electron/main.ts
-var r;
-function i() {
-	r = new e({
+var mainWindow;
+function createWindow() {
+	mainWindow = new BrowserWindow({
 		width: 1200,
 		height: 800,
 		webPreferences: {
-			nodeIntegration: !0,
-			contextIsolation: !1
+			nodeIntegration: true,
+			contextIsolation: false
 		},
 		titleBarStyle: "hiddenInset"
-	}), t.isPackaged ? r.loadFile(n.join(__dirname, "../dist/index.html")) : (r.loadURL("http://localhost:5173"), r.webContents.openDevTools()), r.on("closed", () => {
-		r = null;
+	});
+	if (!app.isPackaged) {
+		mainWindow.loadURL("http://localhost:5173");
+		mainWindow.webContents.openDevTools();
+	} else mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
+	mainWindow.on("closed", () => {
+		mainWindow = null;
 	});
 }
-t.on("ready", i), t.on("window-all-closed", () => {
-	process.platform !== "darwin" && t.quit();
-}), t.on("activate", () => {
-	r === null && i();
+app.on("ready", createWindow);
+app.on("window-all-closed", () => {
+	if (process.platform !== "darwin") app.quit();
+});
+app.on("activate", () => {
+	if (mainWindow === null) createWindow();
 });
 //#endregion
 export {};

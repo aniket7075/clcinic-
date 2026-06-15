@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
-import { setClinicName } from '../store/authSlice';
+import { setClinicName, setClinicId } from '../store/authSlice';
 import { Building, ChevronDown, Check } from 'lucide-react';
 import api from '../api/axios';
 
@@ -27,11 +27,25 @@ const ClinicSwitcher: React.FC = () => {
           const response = await api.get('/settings/clinics');
           setClinics(response.data);
           if (response.data.length > 0) {
-            // Set the first clinic as default if none selected
-            const defaultClinic = response.data.find((c: Clinic) => c.name === 'Main Clinic') || response.data[0];
-            setActiveClinic(defaultClinic);
-            dispatch(setClinicName(defaultClinic.name));
-            api.defaults.headers.common['x-clinic-id'] = defaultClinic.id;
+            // Use the persisted clinic if it exists, otherwise default
+            const savedStateStr = localStorage.getItem('authState');
+            let savedClinicId = null;
+            if (savedStateStr) {
+              try {
+                savedClinicId = JSON.parse(savedStateStr).clinicId;
+              } catch (e) {}
+            }
+            
+            const defaultClinic = savedClinicId 
+              ? response.data.find((c: Clinic) => c.id === savedClinicId) 
+              : (response.data.find((c: Clinic) => c.name === 'Main Clinic') || response.data[0]);
+              
+            if (defaultClinic) {
+              setActiveClinic(defaultClinic);
+              dispatch(setClinicName(defaultClinic.name));
+              dispatch(setClinicId(defaultClinic.id));
+              api.defaults.headers.common['x-clinic-id'] = defaultClinic.id;
+            }
           }
         } catch (error) {
           console.error('Failed to fetch clinics:', error);
@@ -45,6 +59,7 @@ const ClinicSwitcher: React.FC = () => {
           const response = await api.get('/settings/clinic');
           setActiveClinic(response.data);
           dispatch(setClinicName(response.data.name));
+          dispatch(setClinicId(response.data.id));
           // Their own token implies clinic_id, so x-clinic-id is not strictly needed
         } catch (error) {
           console.error('Failed to fetch clinic:', error);
@@ -57,6 +72,7 @@ const ClinicSwitcher: React.FC = () => {
   const handleSelect = (clinic: Clinic) => {
     setActiveClinic(clinic);
     dispatch(setClinicName(clinic.name));
+    dispatch(setClinicId(clinic.id));
     api.defaults.headers.common['x-clinic-id'] = clinic.id;
     setIsOpen(false);
     // Reload to apply new clinic context globally to all components

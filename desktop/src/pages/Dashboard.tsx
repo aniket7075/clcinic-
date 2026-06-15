@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/authSlice';
 import type { RootState } from '../store';
-import { LogOut, Users, Calendar, LayoutDashboard, Settings, UserCircle, IndianRupee, Package, BarChart2, Activity, HelpCircle, Bell, Building2 } from 'lucide-react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { LogOut, Users, Calendar, LayoutDashboard, Settings, UserCircle, IndianRupee, Package, BarChart2, Activity, HelpCircle, Bell, Building2, ArrowLeft } from 'lucide-react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import ClinicSwitcher from '../components/ClinicSwitcher';
 
@@ -23,6 +23,7 @@ interface DashboardStats {
 const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate();
     const user = useSelector((state: RootState) => state.auth.user);
     const clinicName = useSelector((state: RootState) => state.auth.clinicName);
     const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -49,18 +50,17 @@ const Dashboard: React.FC = () => {
   
     return (
       <div className="flex h-screen bg-slate-50">
-        {/* Sidebar */}
-        <div className="w-[280px] bg-[oklch(0.74_0.04_205.97)] text-white flex flex-col shadow-2xl shadow-black/10 z-10 overflow-hidden relative">
+        <div className="w-[280px] bg-[oklch(0.78_0.03_206.04)] text-white flex flex-col shadow-2xl shadow-black/10 z-10 overflow-hidden relative">
           
           {/* Decorative blur */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
   
-          <div className="p-6 pb-2 relative z-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shadow-lg shadow-black/20 shrink-0">
-                <span className="text-white font-extrabold text-xl">{clinicName.charAt(0)}</span>
+          <div className="p-6">
+            <div className="flex flex-col gap-3 mb-6 relative z-10">
+              <div className="w-48 h-auto mb-2 flex items-center shrink-0">
+                <img src="/logo-white.png" alt="Q DENT Logo" className="w-full object-contain drop-shadow-md" />
               </div>
-              <h2 className="text-[17px] font-extrabold text-white tracking-wide leading-tight line-clamp-2">{clinicName}</h2>
+              <h2 className="text-[15px] font-extrabold text-white tracking-wide leading-tight line-clamp-2">{clinicName}</h2>
             </div>
             <ClinicSwitcher />
           </div>
@@ -161,14 +161,14 @@ const Dashboard: React.FC = () => {
             <main className="flex-1 overflow-y-auto p-6 bg-slate-50">
               {loading ? (
                 <div className="flex justify-center items-center h-64">
-                  <Activity className="animate-spin text-[#6899B0]" size={32} />
+                  <Activity className="animate-spin text-blue-600" size={32} />
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                       <h3 className="text-black text-sm ">Today's Appointments</h3>
-                      <div className="p-2 bg-[#E0EEF5] rounded-lg text-[#6899B0]">
+                      <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                         <Calendar size={20} />
                       </div>
                     </div>
@@ -178,35 +178,35 @@ const Dashboard: React.FC = () => {
                   <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                       <h3 className="text-black text-sm ">Total Patients</h3>
-                      <div className="p-2 bg-[#E0EEF5] rounded-lg text-[#6899B0]">
+                      <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                         <Users size={20} />
                       </div>
                     </div>
                     <p className="text-3xl font-bold text-black mt-4">{stats?.totalPatients}</p>
                   </div>
                   
-                  <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-black text-sm ">Today's Revenue</h3>
-                      <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
-                        <IndianRupee size={20} />
-                      </div>
-                    </div>
-                    <p className="text-3xl font-bold text-black mt-4">₹{stats?.todayRevenue}</p>
-                  </div>
-                  
-                  <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-black text-sm ">Pending Payments</h3>
-                      <div className="p-2 bg-orange-50 rounded-lg text-orange-600">
-                        <IndianRupee size={20} />
-                      </div>
-                    </div>
-                    <p className="text-3xl font-bold text-black mt-4">₹{stats?.pendingPayments}</p>
-                  </div>
-
                   {isAdmin && (
                     <>
+                      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <div className="flex justify-between items-start">
+                          <h3 className="text-black text-sm ">Today's Revenue</h3>
+                          <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                            <IndianRupee size={20} />
+                          </div>
+                        </div>
+                        <p className="text-3xl font-bold text-black mt-4">₹{stats?.todayRevenue}</p>
+                      </div>
+                      
+                      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                        <div className="flex justify-between items-start">
+                          <h3 className="text-black text-sm ">Pending Payments</h3>
+                          <div className="p-2 bg-orange-50 rounded-lg text-orange-600">
+                            <IndianRupee size={20} />
+                          </div>
+                        </div>
+                        <p className="text-3xl font-bold text-black mt-4">₹{stats?.pendingPayments}</p>
+                      </div>
+
                       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
                           <h3 className="text-black text-sm ">Low Stock Alerts</h3>
@@ -222,7 +222,7 @@ const Dashboard: React.FC = () => {
                       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
                           <h3 className="text-black text-sm ">Staff Members</h3>
-                          <div className="p-2 bg-[#E0EEF5] rounded-lg text-[#6899B0]">
+                          <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                             <UserCircle size={20} />
                           </div>
                         </div>
@@ -235,9 +235,19 @@ const Dashboard: React.FC = () => {
             </main>
           </>
         ) : (
-          <main className="flex-1 overflow-y-auto">
-            <Outlet />
-          </main>
+          <div className="flex-1 flex flex-col h-full overflow-hidden">
+            <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4 flex items-center shrink-0">
+              <button 
+                onClick={() => navigate(-1)} 
+                className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors font-semibold"
+              >
+                <ArrowLeft size={18} /> Back
+              </button>
+            </header>
+            <main className="flex-1 overflow-y-auto bg-slate-50 relative">
+              <Outlet />
+            </main>
+          </div>
         )}
       </div>
     </div>

@@ -9,8 +9,8 @@ const theme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: '#005f73',
-    secondary: '#0a9396',
+    primary: '#0F203C', // Q DENT Navy Blue
+    secondary: '#8F9EAB', // Q DENT Silver Gray
     error: '#ae2012',
   },
 };

@@ -124,9 +124,4 @@
   @supports (color: color-mix(in lab, red, red)) {
     background-color: color-mix(in oklab, oklch(0.83 0.03 199.23) 60%, transparent);
   }
-
-  .bg-\[\#6899B0\] {
-    background-color: #2e3d53a6;
-  }
-
 }

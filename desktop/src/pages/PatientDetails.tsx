@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import api from '../api/axios';
-import { Plus, Trash2, Pill, FileText, Download } from 'lucide-react';
+import { Plus, Trash2, Pill, FileText, Download, ArrowLeft } from 'lucide-react';
 
 const ToothIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -13,6 +13,7 @@ const ToothIcon = ({ className }: { className?: string }) => (
 
 const PatientDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [patient, setPatient] = useState<any>(null);
   const [timeline, setTimeline] = useState<{history: any[], prescriptions: any[], appointments: any[]}>({ history: [], prescriptions: [], appointments: [] });
   const [dentalChart, setDentalChart] = useState<any[]>([]);
@@ -187,7 +188,7 @@ const PatientDetails: React.FC = () => {
             </button>
             <button 
               onClick={() => setShowPrescriptionModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 font-medium rounded-lg hover:bg-purple-100 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[oklch(0.78_0.03_206.04)]/10 text-[oklch(0.6_0.03_206.04)] font-medium rounded-lg hover:bg-[oklch(0.78_0.03_206.04)]/20 transition-colors"
             >
               <Pill size={18} />
               Add Prescription
@@ -358,7 +359,7 @@ const PatientDetails: React.FC = () => {
               timeline.prescriptions.map((px, index) => (
                 <div key={px.id || index} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-xs font-bold px-2 py-1 bg-purple-100 text-purple-700 rounded uppercase tracking-wider">{new Date(px.prescription_date || px.created_at).toLocaleDateString()}</span>
+                    <span className="text-xs font-bold px-2 py-1 bg-[oklch(0.78_0.03_206.04)]/10 text-[oklch(0.6_0.03_206.04)] rounded uppercase tracking-wider">{new Date(px.prescription_date || px.created_at).toLocaleDateString()}</span>
                     <button 
                       onClick={() => handleDownloadPrescription(px.id)} 
                       className="text-black hover:text-[#6899B0] flex items-center gap-1"
@@ -395,7 +396,7 @@ const PatientDetails: React.FC = () => {
       {showPrescriptionModal && isDoctor && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center gap-2 mb-6 text-purple-700">
+            <div className="flex items-center gap-2 mb-6 text-[oklch(0.6_0.03_206.04)]">
               <Pill size={24} />
               <h2 className="text-xl font-bold">Write Prescription</h2>
             </div>
@@ -404,7 +405,7 @@ const PatientDetails: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium mb-1">General Instructions (Optional)</label>
                 <textarea
-                  className="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-purple-500 outline-none"
+                  className="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-[oklch(0.78_0.03_206.04)] outline-none"
                   placeholder="e.g. Take medicines after meals..."
                   value={prescriptionForm.instructions}
                   onChange={e => setPrescriptionForm({...prescriptionForm, instructions: e.target.value})}
@@ -414,20 +415,20 @@ const PatientDetails: React.FC = () => {
               <div>
                 <div className="flex justify-between items-center mb-3">
                   <label className="block text-sm font-medium">Medicines</label>
-                  <button type="button" onClick={addPrescriptionItem} className="text-sm text-purple-600 font-medium hover:text-purple-700 flex items-center gap-1">
+                  <button type="button" onClick={addPrescriptionItem} className="text-sm text-[oklch(0.78_0.03_206.04)] font-medium hover:brightness-90 flex items-center gap-1">
                     <Plus size={14} /> Add Medicine
                   </button>
                 </div>
                 
                 <div className="space-y-3">
                   {prescriptionForm.items.map((item, index) => (
-                    <div key={index} className="flex gap-2 items-center bg-purple-50/50 p-3 rounded-lg border border-purple-100">
+                    <div key={index} className="flex gap-2 items-center bg-[oklch(0.78_0.03_206.04)]/10 p-3 rounded-lg border border-[oklch(0.78_0.03_206.04)]/20">
                       <div className="flex-1 space-y-3">
                         <input 
                           required 
                           type="text" 
                           placeholder="Medicine Name (e.g. Amoxicillin 500mg)"
-                          className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-[oklch(0.78_0.03_206.04)]"
                           value={item.medicine_name}
                           onChange={e => handlePrescriptionItemChange(index, 'medicine_name', e.target.value)}
                         />
@@ -436,7 +437,7 @@ const PatientDetails: React.FC = () => {
                             required 
                             type="text" 
                             placeholder="Dosage (e.g. 1 Tablet)"
-                            className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500"
+                            className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-[oklch(0.78_0.03_206.04)]"
                             value={item.dosage}
                             onChange={e => handlePrescriptionItemChange(index, 'dosage', e.target.value)}
                           />
@@ -444,7 +445,7 @@ const PatientDetails: React.FC = () => {
                             required 
                             type="text" 
                             placeholder="Frequency (e.g. Twice a day)"
-                            className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500"
+                            className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-[oklch(0.78_0.03_206.04)]"
                             value={item.frequency}
                             onChange={e => handlePrescriptionItemChange(index, 'frequency', e.target.value)}
                           />
@@ -473,7 +474,7 @@ const PatientDetails: React.FC = () => {
 
               <div className="flex justify-end gap-3 mt-8 pt-4 border-t">
                 <button type="button" onClick={() => setShowPrescriptionModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg font-medium">Cancel</button>
-                <button type="submit" className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium">
+                <button type="submit" className="px-6 py-2 bg-[oklch(0.78_0.03_206.04)] text-white rounded-lg hover:brightness-90 font-medium">
                   Save Prescription
                 </button>
               </div>

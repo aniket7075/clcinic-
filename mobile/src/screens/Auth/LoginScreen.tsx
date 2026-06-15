@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { TextInput, Button, Text, useTheme } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { setCredentials, setLoading } from '../../store/slices/authSlice';
@@ -43,9 +43,13 @@ const LoginScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.content}>
-        <Text variant="displayMedium" style={styles.title}>
-          Dental Clinic
-        </Text>
+        <View style={styles.logoContainer}>
+          <Image 
+            source={require('../../assets/logo.png')} 
+            style={styles.logo} 
+            resizeMode="contain" 
+          />
+        </View>
         <Text variant="titleMedium" style={styles.subtitle}>
           Staff Management System
         </Text>
@@ -93,10 +97,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
   },
-  title: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    marginBottom: 5,
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  logo: {
+    width: '80%',
+    height: 100,
   },
   subtitle: {
     textAlign: 'center',

@@ -15,6 +15,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   clinicName: string;
+  clinicId: string | null;
 }
 
 const initialState: AuthState = {
@@ -23,6 +24,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   isLoading: false,
   clinicName: 'Clinic Pro',
+  clinicId: null,
 };
 
 const authSlice = createSlice({
@@ -42,6 +44,7 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.clinicName = 'Clinic Pro';
+      state.clinicId = null;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
@@ -49,9 +52,12 @@ const authSlice = createSlice({
     setClinicName: (state, action: PayloadAction<string>) => {
       state.clinicName = action.payload;
     },
+    setClinicId: (state, action: PayloadAction<string | null>) => {
+      state.clinicId = action.payload;
+    },
   },
 });
 
-export const { setCredentials, logout, setLoading, setClinicName } = authSlice.actions;
+export const { setCredentials, logout, setLoading, setClinicName, setClinicId } = authSlice.actions;
 
 export default authSlice.reducer;
