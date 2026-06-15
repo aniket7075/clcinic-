@@ -28,8 +28,10 @@ import reportsRoutes from './routes/reports.routes';
 import settingsRoutes from './routes/settings.routes';
 import notificationsRoutes from './routes/notifications.routes';
 import clinicsRoutes from './routes/clinics.routes';
+import publicRoutes from './routes/public.routes';
 
 // Setup routes here later
+app.use('/api/public', publicRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/patients', patientRoutes);
 app.use('/api/appointments', appointmentRoutes);

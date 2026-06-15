@@ -35,6 +35,22 @@ export const getAppointmentsReport = async (req: AuthRequest, res: Response): Pr
   }
 };
 
+export const getExpensesReport = async (req: AuthRequest, res: Response): Promise<void> => {
+  const { startDate, endDate } = req.query;
+  try {
+    let query = supabase.from('expenses').select('amount, expense_date, category').eq('clinic_id', req.user.clinic_id);
+    if (startDate) query = query.gte('expense_date', startDate);
+    if (endDate) query = query.lte('expense_date', endDate);
+
+    const { data, error } = await query.order('expense_date', { ascending: true });
+    if (error) throw error;
+
+    res.status(200).json(data);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const getInventoryReport = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { data, error } = await supabase

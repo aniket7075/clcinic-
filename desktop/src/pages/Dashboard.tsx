@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../store/authSlice';
 import type { RootState } from '../store';
-import { LogOut, Users, Calendar, LayoutDashboard, Settings, UserCircle, IndianRupee, Package, BarChart2, Activity, HelpCircle, Bell, Building2, ArrowLeft } from 'lucide-react';
+import { LogOut, Users, Calendar, LayoutDashboard, Settings, UserCircle, IndianRupee, Package, BarChart2, Activity, HelpCircle, Bell, Building2, ArrowLeft, Beaker, Tag } from 'lucide-react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import ClinicSwitcher from '../components/ClinicSwitcher';
@@ -29,7 +29,9 @@ const Dashboard: React.FC = () => {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
     
-    const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'CLINIC_ADMIN';
+    const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN' || user?.role === 'admin';
+    const isDoctor = user?.role === 'DOCTOR' || user?.role === 'doctor';
+    const isReceptionist = user?.role === 'RECEPTIONIST' || user?.role === 'receptionist';
     const isHome = location.pathname === '/';
   
     useEffect(() => {
@@ -82,10 +84,24 @@ const Dashboard: React.FC = () => {
             <IndianRupee size={20} strokeWidth={location.pathname.startsWith('/billing') ? 2.5 : 2} />
             <span>Billing</span>
           </Link>
-          <Link to="/inventory" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/inventory') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
-            <Package size={20} strokeWidth={location.pathname.startsWith('/inventory') ? 2.5 : 2} />
-            <span>Inventory</span>
-          </Link>
+          {isAdmin && (
+            <>
+              <Link to="/expenses" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/expenses') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
+                <Tag size={20} strokeWidth={location.pathname.startsWith('/expenses') ? 2.5 : 2} />
+                <span>Expenses</span>
+              </Link>
+              <Link to="/inventory" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/inventory') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
+                <Package size={20} strokeWidth={location.pathname.startsWith('/inventory') ? 2.5 : 2} />
+                <span>Inventory</span>
+              </Link>
+            </>
+          )}
+          {(isAdmin || isDoctor) && (
+            <Link to="/lab-orders" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/lab-orders') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
+              <Beaker size={20} strokeWidth={location.pathname.startsWith('/lab-orders') ? 2.5 : 2} />
+              <span>Lab Orders</span>
+            </Link>
+          )}
 
           <div className="pt-6 pb-2 px-4">
             <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest opacity-80">Personal</p>
@@ -107,10 +123,16 @@ const Dashboard: React.FC = () => {
                 <UserCircle size={20} strokeWidth={location.pathname.startsWith('/staff') ? 2.5 : 2} />
                 <span>Staff Management</span>
               </Link>
-              <Link to="/reports" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/reports') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
-                <BarChart2 size={20} strokeWidth={location.pathname.startsWith('/reports') ? 2.5 : 2} />
-                <span>Reports</span>
-              </Link>
+            </>
+          )}
+          {(isAdmin || isDoctor) && (
+            <Link to="/reports" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/reports') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
+              <BarChart2 size={20} strokeWidth={location.pathname.startsWith('/reports') ? 2.5 : 2} />
+              <span>Reports</span>
+            </Link>
+          )}
+          {isAdmin && (
+            <>
               {user?.role === 'SUPER_ADMIN' && (
                 <Link to="/manage-clinics" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/manage-clinics') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                   <Building2 size={20} strokeWidth={location.pathname.startsWith('/manage-clinics') ? 2.5 : 2} />

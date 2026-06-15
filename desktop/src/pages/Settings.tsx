@@ -14,6 +14,7 @@ const Settings: React.FC = () => {
     taxId: '',
     configData: {
       enableNotifications: true,
+      enableWhatsappReminders: true,
       theme: 'light'
     }
   });
@@ -41,7 +42,7 @@ const Settings: React.FC = () => {
           phone: res.data.contact_mobile || '',
           email: res.data.contact_email || '',
           taxId: res.data.gst_number || '',
-          configData: { enableNotifications: true, theme: 'light' }
+          configData: { enableNotifications: true, enableWhatsappReminders: true, theme: 'light' }
         });
       }
     } catch (err) {
@@ -207,6 +208,22 @@ const Settings: React.FC = () => {
                   className="sr-only peer" 
                   checked={!!formData.configData?.enableNotifications}
                   onChange={(e) => setFormData({...formData, configData: {...formData.configData, enableNotifications: e.target.checked}})}
+                />
+                <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#6899B0]"></div>
+              </label>
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200 mb-4">
+              <div>
+                <p className="font-medium text-black">Automated WhatsApp Reminders</p>
+                <p className="text-sm text-black">Automatically send reminders 1 day before the appointment.</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  className="sr-only peer" 
+                  checked={!!formData.configData?.enableWhatsappReminders}
+                  onChange={(e) => setFormData({...formData, configData: {...formData.configData, enableWhatsappReminders: e.target.checked}})}
                 />
                 <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#6899B0]"></div>
               </label>
