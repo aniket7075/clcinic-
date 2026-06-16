@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { Package, AlertTriangle, Plus, Truck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Inventory: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'items' | 'suppliers'>('items');
   const [items, setItems] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -88,15 +90,15 @@ const Inventory: React.FC = () => {
     <div className="p-8 max-w-7xl mx-auto relative">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Inventory Management</h1>
-          <p className="text-slate-500 text-sm mt-1">Track clinic supplies, manage stock levels, and organize suppliers.</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('inventory.title')}</h1>
+          <p className="text-slate-500 text-sm mt-1">{t('inventory.subtitle')}</p>
         </div>
         <button 
           onClick={() => activeTab === 'items' ? setShowItemModal(true) : setShowSupplierModal(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-all font-semibold shadow-sm"
         >
           <Plus size={18} />
-          {activeTab === 'items' ? 'Add Item' : 'Add Supplier'}
+          {activeTab === 'items' ? t('inventory.addItemBtn') : t('inventory.addSupplierBtn')}
         </button>
       </div>
 
@@ -108,7 +110,7 @@ const Inventory: React.FC = () => {
           }`}
         >
           <Package size={18} />
-          Inventory Items
+          {t('inventory.itemsTab')}
         </button>
         <button
           onClick={() => setActiveTab('suppliers')}
@@ -117,7 +119,7 @@ const Inventory: React.FC = () => {
           }`}
         >
           <Truck size={18} />
-          Suppliers
+          {t('inventory.suppliersTab')}
         </button>
       </div>
 
@@ -131,12 +133,12 @@ const Inventory: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
-                  <th className="p-4 font-bold">Item Name</th>
-                  <th className="p-4 font-bold">Category</th>
-                  <th className="p-4 font-bold">Quantity</th>
-                  <th className="p-4 font-bold">Unit Price</th>
-                  <th className="p-4 font-bold">Expiry Date</th>
-                  <th className="p-4 font-bold">Status</th>
+                  <th className="p-4 font-bold">{t('inventory.itemName')}</th>
+                  <th className="p-4 font-bold">{t('inventory.category')}</th>
+                  <th className="p-4 font-bold">{t('inventory.quantity')}</th>
+                  <th className="p-4 font-bold">{t('inventory.unitPrice')}</th>
+                  <th className="p-4 font-bold">{t('inventory.expiryDate')}</th>
+                  <th className="p-4 font-bold">{t('inventory.status')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -154,11 +156,11 @@ const Inventory: React.FC = () => {
                       <td className="p-4">
                         {isLowStock ? (
                           <span className="flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 px-3 py-1 rounded-md w-max uppercase tracking-wider">
-                            <AlertTriangle size={14} strokeWidth={2.5} /> Low Stock
+                            <AlertTriangle size={14} strokeWidth={2.5} /> {t('inventory.lowStock')}
                           </span>
                         ) : (
                           <span className="text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-md w-max inline-block text-center uppercase tracking-wider">
-                            In Stock
+                            {t('inventory.inStock')}
                           </span>
                         )}
                       </td>
@@ -169,8 +171,8 @@ const Inventory: React.FC = () => {
                   <tr>
                     <td colSpan={6} className="p-12 text-center text-slate-500">
                       <Package size={48} className="mx-auto text-slate-300 mb-4" />
-                      <h3 className="text-lg font-bold text-slate-900 mb-1">No items found</h3>
-                      <p>Add some inventory items to see them here.</p>
+                      <h3 className="text-lg font-bold text-slate-900 mb-1">{t('inventory.noItems')}</h3>
+                      <p>{t('inventory.noItemsSub')}</p>
                     </td>
                   </tr>
                 )}
@@ -182,11 +184,11 @@ const Inventory: React.FC = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
-                  <th className="p-4 font-bold">Supplier Name</th>
-                  <th className="p-4 font-bold">Contact Person</th>
-                  <th className="p-4 font-bold">Email</th>
-                  <th className="p-4 font-bold">Phone</th>
-                  <th className="p-4 font-bold">Rating</th>
+                  <th className="p-4 font-bold">{t('inventory.supplierName')}</th>
+                  <th className="p-4 font-bold">{t('inventory.contactPerson')}</th>
+                  <th className="p-4 font-bold">{t('inventory.email')}</th>
+                  <th className="p-4 font-bold">{t('inventory.phone')}</th>
+                  <th className="p-4 font-bold">{t('inventory.rating')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -203,8 +205,8 @@ const Inventory: React.FC = () => {
                   <tr>
                     <td colSpan={5} className="p-12 text-center text-slate-500">
                       <Truck size={48} className="mx-auto text-slate-300 mb-4" />
-                      <h3 className="text-lg font-bold text-slate-900 mb-1">No suppliers found</h3>
-                      <p>Add some suppliers to see them here.</p>
+                      <h3 className="text-lg font-bold text-slate-900 mb-1">{t('inventory.noSuppliers')}</h3>
+                      <p>{t('inventory.noSuppliersSub')}</p>
                     </td>
                   </tr>
                 )}
@@ -219,51 +221,51 @@ const Inventory: React.FC = () => {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
             <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 shrink-0">
-              <h2 className="text-xl font-bold text-slate-900">Add New Item</h2>
+              <h2 className="text-xl font-bold text-slate-900">{t('inventory.newItemTitle')}</h2>
             </div>
             <div className="p-6 overflow-y-auto">
               <form onSubmit={handleItemSubmit} className="space-y-5">
                 <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Item Name</label>
-                    <input required type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.item_name} onChange={e => setItemFormData({...itemFormData, item_name: e.target.value})} />
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.itemName')}</label>
+                    <input required list="inventory-items" type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.item_name} onChange={e => setItemFormData({...itemFormData, item_name: e.target.value})} />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Category</label>
-                    <input required type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.category} onChange={e => setItemFormData({...itemFormData, category: e.target.value})} />
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.category')}</label>
+                    <input required list="inventory-categories" type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.category} onChange={e => setItemFormData({...itemFormData, category: e.target.value})} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-5">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Quantity</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.quantity')}</label>
                     <input required type="number" min="0" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.quantity} onChange={e => setItemFormData({...itemFormData, quantity: Number(e.target.value)})} />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Unit</label>
-                    <input required type="text" placeholder="e.g. pcs, boxes" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.unit} onChange={e => setItemFormData({...itemFormData, unit: e.target.value})} />
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.unit')}</label>
+                    <input required list="inventory-units" type="text" placeholder="e.g. pcs, boxes" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.unit} onChange={e => setItemFormData({...itemFormData, unit: e.target.value})} />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Price (₹)</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.price')}</label>
                     <input required type="number" min="0" step="0.01" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.unit_price} onChange={e => setItemFormData({...itemFormData, unit_price: Number(e.target.value)})} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Low Stock Alert</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.lowStockAlert')}</label>
                     <input required type="number" min="0" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.low_stock_threshold} onChange={e => setItemFormData({...itemFormData, low_stock_threshold: Number(e.target.value)})} />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Expiry Date (Opt)</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.expiryOpt')}</label>
                     <input type="date" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={itemFormData.expiry_date} onChange={e => setItemFormData({...itemFormData, expiry_date: e.target.value})} />
                   </div>
                 </div>
 
                 <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
-                  <button type="button" onClick={() => setShowItemModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="button" onClick={() => setShowItemModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">{t('inventory.cancel')}</button>
                   <button type="submit" disabled={submitting} className="px-5 py-2.5 bg-[#6899B0] text-white font-bold rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-all shadow-sm">
-                    {submitting ? 'Adding...' : 'Add Item'}
+                    {submitting ? t('inventory.adding') : t('inventory.addItemBtn')}
                   </button>
                 </div>
               </form>
@@ -277,40 +279,40 @@ const Inventory: React.FC = () => {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 shrink-0">
-              <h2 className="text-xl font-bold text-slate-900">Add New Supplier</h2>
+              <h2 className="text-xl font-bold text-slate-900">{t('inventory.newSupplierTitle')}</h2>
             </div>
             <div className="p-6 overflow-y-auto">
               <form onSubmit={handleSupplierSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Supplier/Company Name</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.companyName')}</label>
                   <input required type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={supplierFormData.supplier_name} onChange={e => setSupplierFormData({...supplierFormData, supplier_name: e.target.value})} />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Contact Person</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.contactPerson')}</label>
                     <input type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={supplierFormData.contact_person} onChange={e => setSupplierFormData({...supplierFormData, contact_person: e.target.value})} />
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 mb-1.5">Phone</label>
+                    <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.phone')}</label>
                     <input type="text" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={supplierFormData.phone} onChange={e => setSupplierFormData({...supplierFormData, phone: e.target.value})} />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Email</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.email')}</label>
                   <input type="email" className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900" value={supplierFormData.email} onChange={e => setSupplierFormData({...supplierFormData, email: e.target.value})} />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5">Address</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5">{t('inventory.address')}</label>
                   <textarea className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none transition-all font-medium text-slate-900 min-h-[100px]" value={supplierFormData.address} onChange={e => setSupplierFormData({...supplierFormData, address: e.target.value})} />
                 </div>
 
                 <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
-                  <button type="button" onClick={() => setShowSupplierModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="button" onClick={() => setShowSupplierModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">{t('inventory.cancel')}</button>
                   <button type="submit" disabled={submitting} className="px-5 py-2.5 bg-[#6899B0] text-white font-bold rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-all shadow-sm">
-                    {submitting ? 'Adding...' : 'Add Supplier'}
+                    {submitting ? t('inventory.adding') : t('inventory.addSupplierBtn')}
                   </button>
                 </div>
               </form>
@@ -318,6 +320,64 @@ const Inventory: React.FC = () => {
           </div>
         </div>
       )}
+
+      <datalist id="inventory-categories">
+        <option value="Consumables" />
+        <option value="Instruments" />
+        <option value="Restorative Materials" />
+        <option value="Endodontics" />
+        <option value="Orthodontics" />
+        <option value="Prosthodontics" />
+        <option value="Impression Materials" />
+        <option value="Infection Control" />
+        <option value="Medicines / Pharmaceuticals" />
+        <option value="Surgical Supplies" />
+        <option value="Disposables" />
+        <option value="Equipment Spares" />
+      </datalist>
+
+      <datalist id="inventory-items">
+        <option value="Alginate Impression Material" />
+        <option value="Composite Resin (A2/A3)" />
+        <option value="Glass Ionomer Cement (GIC)" />
+        <option value="Local Anesthesia Lignocaine" />
+        <option value="Sodium Hypochlorite (NaOCl)" />
+        <option value="Gutta Percha (GP) Points" />
+        <option value="Paper Points" />
+        <option value="K-Files (15-40)" />
+        <option value="H-Files" />
+        <option value="Rotary Files (NiTi)" />
+        <option value="Etchant Gel (Phosphoric Acid)" />
+        <option value="Bonding Agent" />
+        <option value="Zinc Oxide Eugenol (ZOE)" />
+        <option value="Calcium Hydroxide" />
+        <option value="Formocresol" />
+        <option value="Surgical Gloves (Box)" />
+        <option value="Examination Gloves (Box)" />
+        <option value="Face Masks (3-Ply)" />
+        <option value="Patient Drapes" />
+        <option value="Suction Tips" />
+        <option value="Cotton Rolls" />
+        <option value="Gauze Pieces" />
+        <option value="Syringes & Needles" />
+        <option value="Endo Motor Blades" />
+        <option value="Ultrasonic Scaler Tips" />
+        <option value="Polishing Paste" />
+        <option value="Articulating Paper" />
+        <option value="X-Ray Films (IOPA)" />
+        <option value="Burs (Diamond/Carbide)" />
+      </datalist>
+
+      <datalist id="inventory-units">
+        <option value="pcs" />
+        <option value="boxes" />
+        <option value="bottles" />
+        <option value="packets" />
+        <option value="kits" />
+        <option value="tubes" />
+        <option value="rolls" />
+        <option value="liters" />
+      </datalist>
     </div>
   );
 };

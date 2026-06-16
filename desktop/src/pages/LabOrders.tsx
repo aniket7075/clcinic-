@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { Beaker, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const LabOrders: React.FC = () => {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -78,31 +80,31 @@ const LabOrders: React.FC = () => {
     <div className="p-8 max-w-7xl mx-auto relative">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-black flex items-center gap-2">
-          <Beaker className="text-[#6899B0]" /> Lab Orders Tracking
+          <Beaker className="text-[#6899B0]" /> {t('labOrders.title')}
         </h1>
         <button 
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-colors font-medium"
         >
-          <Plus size={18} /> New Lab Order
+          <Plus size={18} /> {t('labOrders.newOrderBtn')}
         </button>
       </div>
 
       {loading ? (
-        <p className="text-black">Loading lab orders...</p>
+        <p className="text-black">{t('labOrders.loading')}</p>
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-black text-sm uppercase tracking-wider font-semibold">
-                <th className="p-4">Date Sent</th>
-                <th className="p-4">Patient</th>
-                <th className="p-4">Lab Name</th>
-                <th className="p-4">Work Detail</th>
-                <th className="p-4">Expected</th>
-                <th className="p-4">Cost</th>
-                <th className="p-4">Status</th>
-                <th className="p-4 text-right">Action</th>
+                <th className="p-4">{t('labOrders.dateSent')}</th>
+                <th className="p-4">{t('labOrders.patient')}</th>
+                <th className="p-4">{t('labOrders.labName')}</th>
+                <th className="p-4">{t('labOrders.workDetail')}</th>
+                <th className="p-4">{t('labOrders.expected')}</th>
+                <th className="p-4">{t('labOrders.cost')}</th>
+                <th className="p-4">{t('labOrders.status')}</th>
+                <th className="p-4 text-right">{t('labOrders.action')}</th>
               </tr>
             </thead>
             <tbody>
@@ -114,7 +116,7 @@ const LabOrders: React.FC = () => {
                   <td className="p-4 text-sm">
                     <p>{order.work_description}</p>
                     {(order.tooth_number || order.shade) && (
-                      <p className="text-xs text-slate-500 mt-1">Tooth: {order.tooth_number || '-'} | Shade: {order.shade || '-'}</p>
+                      <p className="text-xs text-slate-500 mt-1">{t('labOrders.tooth')} {order.tooth_number || '-'} | {t('labOrders.shade')} {order.shade || '-'}</p>
                     )}
                   </td>
                   <td className="p-4 text-sm">{order.expected_date ? new Date(order.expected_date).toLocaleDateString() : '-'}</td>
@@ -145,7 +147,7 @@ const LabOrders: React.FC = () => {
                 <tr>
                   <td colSpan={8} className="p-8 text-center text-slate-500">
                     <Beaker size={48} className="mx-auto text-slate-300 mb-4" />
-                    No lab orders tracked yet.
+                    {t('labOrders.noOrders')}
                   </td>
                 </tr>
               )}
@@ -158,64 +160,109 @@ const LabOrders: React.FC = () => {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Plus className="text-[#6899B0]" /> Create Lab Order
+              <Plus className="text-[#6899B0]" /> {t('labOrders.createOrderTitle')}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Patient</label>
+                  <label className="block text-sm font-medium mb-1">{t('labOrders.patient')}</label>
                   <select required className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.patient_id} onChange={e => setForm({...form, patient_id: e.target.value})}>
-                    <option value="">Select Patient</option>
+                    <option value="">{t('labOrders.selectPatient')}</option>
                     {patients.map(p => (
                       <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Lab Name</label>
+                  <label className="block text-sm font-medium mb-1">{t('labOrders.labName')}</label>
                   <input required type="text" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.lab_name} onChange={e => setForm({...form, lab_name: e.target.value})} placeholder="e.g. Modern Dental Lab" />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-1">Work Description</label>
-                <input required type="text" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.work_description} onChange={e => setForm({...form, work_description: e.target.value})} placeholder="e.g. PFM Crown" />
+                <label className="block text-sm font-medium mb-1">{t('labOrders.workDescription')}</label>
+                <input required list="lab-works" type="text" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.work_description} onChange={e => setForm({...form, work_description: e.target.value})} placeholder="e.g. PFM Crown" />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Tooth Number(s)</label>
+                  <label className="block text-sm font-medium mb-1">{t('labOrders.toothNumber')}</label>
                   <input type="text" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.tooth_number} onChange={e => setForm({...form, tooth_number: e.target.value})} placeholder="e.g. 14, 15" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Shade</label>
-                  <input type="text" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.shade} onChange={e => setForm({...form, shade: e.target.value})} placeholder="e.g. A2" />
+                  <input list="tooth-shades" type="text" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.shade} onChange={e => setForm({...form, shade: e.target.value})} placeholder="e.g. A2" />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Sent Date</label>
+                  <label className="block text-sm font-medium mb-1">{t('labOrders.dateSent')}</label>
                   <input required type="date" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.sent_date} onChange={e => setForm({...form, sent_date: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Expected Return Date</label>
+                  <label className="block text-sm font-medium mb-1">{t('labOrders.expectedReturnDate')}</label>
                   <input required type="date" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.expected_date} onChange={e => setForm({...form, expected_date: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Estimated Cost (₹)</label>
+                  <label className="block text-sm font-medium mb-1">{t('labOrders.estimatedCost')}</label>
                   <input required type="number" min="0" className="w-full p-2 border rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={form.cost} onChange={e => setForm({...form, cost: Number(e.target.value)})} />
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-6 border-t mt-6">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button type="submit" className="px-6 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]">Create Order</button>
+                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">{t('expenses.cancel')}</button>
+                <button type="submit" className="px-6 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]">{t('labOrders.createOrderBtn')}</button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      <datalist id="lab-works">
+        <option value="PFM Crown (Porcelain Fused to Metal)" />
+        <option value="Zirconia Crown (Monolithic)" />
+        <option value="Zirconia Crown (Layered)" />
+        <option value="E-max Crown / Lithium Disilicate" />
+        <option value="Metal Crown (Full Metal)" />
+        <option value="PFM Bridge" />
+        <option value="Zirconia Bridge" />
+        <option value="Complete Denture (Upper/Lower)" />
+        <option value="Removable Partial Denture (Acrylic)" />
+        <option value="Cast Partial Denture (CPD)" />
+        <option value="Flexible Denture (Valplast)" />
+        <option value="Night Guard / Splint" />
+        <option value="Essix Retainer" />
+        <option value="Hawley Retainer" />
+        <option value="Bleaching Trays" />
+        <option value="Implant Crown (Cement Retained)" />
+        <option value="Implant Crown (Screw Retained)" />
+        <option value="Veneers / Laminates" />
+        <option value="Inlay / Onlay" />
+      </datalist>
+
+      <datalist id="tooth-shades">
+        <option value="A1" />
+        <option value="A2" />
+        <option value="A3" />
+        <option value="A3.5" />
+        <option value="A4" />
+        <option value="B1" />
+        <option value="B2" />
+        <option value="B3" />
+        <option value="B4" />
+        <option value="C1" />
+        <option value="C2" />
+        <option value="C3" />
+        <option value="C4" />
+        <option value="D2" />
+        <option value="D3" />
+        <option value="D4" />
+        <option value="BL1 (Bleach)" />
+        <option value="BL2 (Bleach)" />
+        <option value="BL3 (Bleach)" />
+        <option value="BL4 (Bleach)" />
+      </datalist>
     </div>
   );
 };

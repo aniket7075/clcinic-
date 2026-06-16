@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Calendar, User, Phone, CheckCircle, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const PublicBooking: React.FC = () => {
+  const { t } = useTranslation();
   const { clinicId } = useParams();
   const [clinic, setClinic] = useState<any>(null);
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -51,22 +54,25 @@ const PublicBooking: React.FC = () => {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500 font-medium">Loading Booking Portal...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500 font-medium">{t('publicBooking.loading')}</div>;
   }
 
   if (!clinic) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-red-500 font-bold">Clinic Not Found.</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-red-500 font-bold">{t('publicBooking.notFound')}</div>;
   }
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4 relative">
+        <div className="absolute top-6 right-6">
+          <LanguageSwitcher />
+        </div>
         <div className="bg-white rounded-xl shadow-xl p-10 max-w-md w-full text-center">
           <CheckCircle size={64} className="text-green-500 mx-auto mb-6" />
-          <h1 className="text-2xl font-black text-black mb-2">Request Received!</h1>
-          <p className="text-slate-600 mb-8">We have received your appointment request. Our reception team will contact you shortly to confirm the booking.</p>
+          <h1 className="text-2xl font-black text-black mb-2">{t('publicBooking.requestReceived')}</h1>
+          <p className="text-slate-600 mb-8">{t('publicBooking.requestDesc')}</p>
           <button onClick={() => window.location.reload()} className="px-6 py-3 bg-[#6899B0] text-white font-bold rounded-lg hover:bg-[#5D8799] transition-colors w-full">
-            Book Another Appointment
+            {t('publicBooking.bookAnother')}
           </button>
         </div>
       </div>
@@ -74,8 +80,11 @@ const PublicBooking: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full overflow-hidden flex flex-col md:flex-row">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative">
+      <div className="absolute top-6 right-6">
+        <LanguageSwitcher />
+      </div>
+      <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full overflow-hidden flex flex-col md:flex-row mt-12 md:mt-0">
         
         {/* Left Side: Clinic Info */}
         <div className="bg-slate-900 text-white p-8 md:w-1/3 flex flex-col justify-between">
@@ -91,17 +100,17 @@ const PublicBooking: React.FC = () => {
             </div>
           </div>
           <div className="mt-12 text-xs font-bold text-slate-500 tracking-widest uppercase">
-            Powered by Q DENT
+            {t('publicBooking.poweredBy')}
           </div>
         </div>
 
         {/* Right Side: Booking Form */}
         <div className="p-8 md:w-2/3">
-          <h2 className="text-xl font-bold text-black mb-6">Request Appointment</h2>
+          <h2 className="text-xl font-bold text-black mb-6">{t('publicBooking.requestAppointment')}</h2>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><User size={14}/> First Name</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><User size={14}/> {t('publicBooking.firstName')}</label>
                 <input 
                   required 
                   type="text"
@@ -111,7 +120,7 @@ const PublicBooking: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Last Name</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">{t('publicBooking.lastName')}</label>
                 <input 
                   required 
                   type="text"
@@ -123,11 +132,11 @@ const PublicBooking: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><Phone size={14}/> Mobile Number</label>
+              <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><Phone size={14}/> {t('publicBooking.mobile')}</label>
               <input 
                 required 
                 type="tel"
-                placeholder="e.g. 9876543210"
+                placeholder={t('publicBooking.mobilePlaceholder')}
                 className="w-full border border-slate-200 p-3 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none font-medium text-black bg-slate-50"
                 value={formData.mobile}
                 onChange={e => setFormData({...formData, mobile: e.target.value})}
@@ -135,14 +144,14 @@ const PublicBooking: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Select Doctor</label>
+              <label className="block text-sm font-bold text-slate-700 mb-1">{t('publicBooking.selectDoctor')}</label>
               <select 
                 required 
                 className="w-full border border-slate-200 p-3 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none font-medium text-black bg-slate-50"
                 value={formData.doctor_id}
                 onChange={e => setFormData({...formData, doctor_id: e.target.value})}
               >
-                <option value="">Choose a doctor...</option>
+                <option value="">{t('publicBooking.chooseDoctor')}</option>
                 {doctors.map(d => (
                   <option key={d.profile_id} value={d.profile_id}>
                     Dr. {d.profiles?.first_name} {d.profiles?.last_name} {d.profiles?.specialty ? `(${d.profiles.specialty})` : ''}
@@ -153,7 +162,7 @@ const PublicBooking: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><Calendar size={14}/> Preferred Date</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><Calendar size={14}/> {t('publicBooking.preferredDate')}</label>
                 <input 
                   required 
                   type="date"
@@ -164,7 +173,7 @@ const PublicBooking: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><Clock size={14}/> Preferred Time</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1 flex items-center gap-1"><Clock size={14}/> {t('publicBooking.preferredTime')}</label>
                 <input 
                   required 
                   type="time"
@@ -176,18 +185,32 @@ const PublicBooking: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1">Reason for Visit (Optional)</label>
-              <textarea 
+              <label className="block text-sm font-bold text-slate-700 mb-1">{t('publicBooking.reason')}</label>
+              <input 
+                list="visit-reasons"
+                type="text"
                 className="w-full border border-slate-200 p-3 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none text-black bg-slate-50"
-                rows={2}
-                placeholder="Toothache, cleaning, etc..."
+                placeholder={t('publicBooking.reasonPlaceholder')}
                 value={formData.notes}
                 onChange={e => setFormData({...formData, notes: e.target.value})}
-              ></textarea>
+              />
+              <datalist id="visit-reasons">
+                <option value={t('publicBooking.reasons.r1')} />
+                <option value={t('publicBooking.reasons.r2')} />
+                <option value={t('publicBooking.reasons.r3')} />
+                <option value={t('publicBooking.reasons.r4')} />
+                <option value={t('publicBooking.reasons.r5')} />
+                <option value={t('publicBooking.reasons.r6')} />
+                <option value={t('publicBooking.reasons.r7')} />
+                <option value={t('publicBooking.reasons.r8')} />
+                <option value={t('publicBooking.reasons.r9')} />
+                <option value={t('publicBooking.reasons.r10')} />
+                <option value={t('publicBooking.reasons.r11')} />
+              </datalist>
             </div>
 
             <button type="submit" disabled={submitting} className="w-full py-4 bg-[#6899B0] text-white font-bold text-lg rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-colors shadow-lg mt-4">
-              {submitting ? 'Submitting Request...' : 'Book Appointment'}
+              {submitting ? t('publicBooking.submiting') : t('publicBooking.bookAppointment')}
             </button>
           </form>
         </div>

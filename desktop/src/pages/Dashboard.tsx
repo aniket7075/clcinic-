@@ -7,6 +7,8 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import axios from '../api/axios';
 import ClinicSwitcher from '../components/ClinicSwitcher';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 interface DashboardStats {
   totalPatients: number;
@@ -42,6 +44,7 @@ const mockPatientData = [
 ];
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -105,69 +108,69 @@ const Dashboard: React.FC = () => {
         <nav className="flex-1 flex flex-col px-4 space-y-1 overflow-y-auto pb-4 mt-4 relative z-10 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <Link to="/" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${isHome ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
             <LayoutDashboard size={20} strokeWidth={isHome ? 2.5 : 2} />
-            <span>Dashboard</span>
+            <span>{t('sidebar.dashboard')}</span>
           </Link>
           <Link to="/appointments" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/appointments') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
             <Calendar size={20} strokeWidth={location.pathname.startsWith('/appointments') ? 2.5 : 2} />
-            <span>Appointments</span>
+            <span>{t('sidebar.appointments')}</span>
           </Link>
           <Link to="/patients" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/patients') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
             <Users size={20} strokeWidth={location.pathname.startsWith('/patients') ? 2.5 : 2} />
-            <span>Patients</span>
+            <span>{t('sidebar.patients')}</span>
           </Link>
           {(isAdmin || isReceptionist) && (
             <Link to="/billing" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/billing') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
               <IndianRupee size={20} strokeWidth={location.pathname.startsWith('/billing') ? 2.5 : 2} />
-              <span>Billing</span>
+              <span>{t('sidebar.billing')}</span>
             </Link>
           )}
           {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
             <>
               <Link to="/expenses" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/expenses') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                 <Tag size={20} strokeWidth={location.pathname.startsWith('/expenses') ? 2.5 : 2} />
-                <span>Expenses</span>
+                <span>{t('sidebar.expenses')}</span>
               </Link>
               <Link to="/inventory" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/inventory') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                 <Package size={20} strokeWidth={location.pathname.startsWith('/inventory') ? 2.5 : 2} />
-                <span>Inventory</span>
+                <span>{t('sidebar.inventory')}</span>
               </Link>
             </>
           )}
           {(isAdmin || isDoctor) && (
             <Link to="/lab-orders" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/lab-orders') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
               <Beaker size={20} strokeWidth={location.pathname.startsWith('/lab-orders') ? 2.5 : 2} />
-              <span>Lab Orders</span>
+              <span>{t('sidebar.labOrders')}</span>
             </Link>
           )}
 
           <div className="pt-6 pb-2 px-4">
-            <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest opacity-80">Personal</p>
+            <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest opacity-80">{t('sidebar.personal')}</p>
           </div>
           {(isAdmin || isDoctor) && (
             <Link to="/schedule" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/schedule') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'} w-full text-left`}>
               <Calendar size={20} strokeWidth={location.pathname.startsWith('/schedule') ? 2.5 : 2} />
-              <span>My Schedule</span>
+              <span>{t('sidebar.mySchedule')}</span>
             </Link>
           )}
           <Link to="/notifications" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/notifications') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'} w-full text-left`}>
             <Bell size={20} strokeWidth={location.pathname.startsWith('/notifications') ? 2.5 : 2} />
-            <span>Notifications</span>
+            <span>{t('sidebar.notifications')}</span>
           </Link>
           {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
             <>
               <div className="pt-4 pb-1.5 px-4">
-                <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest opacity-80">Administration</p>
+                <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest opacity-80">{t('sidebar.administration')}</p>
               </div>
               <Link to="/staff" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/staff') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                 <UserCircle size={20} strokeWidth={location.pathname.startsWith('/staff') ? 2.5 : 2} />
-                <span>Staff Management</span>
+                <span>{t('sidebar.staffManagement')}</span>
               </Link>
             </>
           )}
           {(isAdmin || isDoctor) && (
             <Link to="/reports" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/reports') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
               <BarChart2 size={20} strokeWidth={location.pathname.startsWith('/reports') ? 2.5 : 2} />
-              <span>Reports</span>
+              <span>{t('sidebar.reports')}</span>
             </Link>
           )}
           {isAdmin && (
@@ -175,13 +178,13 @@ const Dashboard: React.FC = () => {
               {isSuperAdmin && activePlan === 'enterprise' && (
                 <Link to="/manage-clinics" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/manage-clinics') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                   <Building2 size={20} strokeWidth={location.pathname.startsWith('/manage-clinics') ? 2.5 : 2} />
-                  <span>Manage Clinics</span>
+                  <span>{t('sidebar.manageClinics')}</span>
                 </Link>
               )}
 
               <Link to="/settings" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/settings') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
                 <Settings size={20} strokeWidth={location.pathname.startsWith('/settings') ? 2.5 : 2} />
-                <span>Settings</span>
+                <span>{t('sidebar.settings')}</span>
               </Link>
             </>
           )}
@@ -196,14 +199,14 @@ const Dashboard: React.FC = () => {
               className="flex items-center space-x-3 px-4 py-2.5 rounded-2xl text-white font-bold hover:bg-white/10 hover:text-white transition-all w-full  hover:translate-x-1"
             >
               <HelpCircle size={20} strokeWidth={2} />
-              <span>Help & Support</span>
+              <span>{t('sidebar.helpSupport')}</span>
             </Link>
             <button 
               onClick={() => dispatch(logout())}
               className="flex items-center space-x-3 px-4 py-2.5 rounded-2xl text-white font-bold hover:bg-red-500/20 hover:text-red-300 transition-all w-full text-left  hover:translate-x-1"
             >
               <LogOut size={20} strokeWidth={2} />
-              <span>Logout</span>
+              <span>{t('sidebar.logout')}</span>
             </button>
           </div>
         </nav>
@@ -214,9 +217,12 @@ const Dashboard: React.FC = () => {
         {isHome ? (
           <>
             <header className="bg-white shadow-sm border-b border-slate-200 p-6 flex justify-between items-center">
-              <h1 className="text-2xl font-bold text-black">Dashboard Overview</h1>
-              <div className="text-sm text-black">
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              <h1 className="text-2xl font-bold text-black">{t('dashboard.title')}</h1>
+              <div className="flex items-center gap-4">
+                <LanguageSwitcher />
+                <div className="text-sm text-black">
+                  {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </div>
               </div>
             </header>
             <main className="flex-1 overflow-y-auto p-6 bg-slate-50">
@@ -229,7 +235,7 @@ const Dashboard: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
-                      <h3 className="text-black text-sm ">Today's Appointments</h3>
+                      <h3 className="text-black text-sm ">{t('dashboard.todaysAppointments')}</h3>
                       <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                         <Calendar size={20} />
                       </div>
@@ -239,7 +245,7 @@ const Dashboard: React.FC = () => {
                   
                   <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
-                      <h3 className="text-black text-sm ">Total Patients</h3>
+                      <h3 className="text-black text-sm ">{t('dashboard.totalPatients')}</h3>
                       <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                         <Users size={20} />
                       </div>
@@ -251,7 +257,7 @@ const Dashboard: React.FC = () => {
                     <>
                       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
-                          <h3 className="text-black text-sm ">Today's Revenue</h3>
+                          <h3 className="text-black text-sm ">{t('dashboard.todaysRevenue')}</h3>
                           <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
                             <IndianRupee size={20} />
                           </div>
@@ -261,7 +267,7 @@ const Dashboard: React.FC = () => {
                       
                       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
-                          <h3 className="text-black text-sm ">Pending Payments</h3>
+                          <h3 className="text-black text-sm ">{t('dashboard.pendingPayments')}</h3>
                           <div className="p-2 bg-orange-50 rounded-lg text-orange-600">
                             <IndianRupee size={20} />
                           </div>
@@ -274,7 +280,7 @@ const Dashboard: React.FC = () => {
                         <>
                           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                             <div className="flex justify-between items-start">
-                              <h3 className="text-black text-sm ">Low Stock Alerts</h3>
+                              <h3 className="text-black text-sm ">{t('dashboard.lowStockAlerts')}</h3>
                           <div className={`p-2 rounded-lg ${stats && stats.lowStockAlerts > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
                             <Package size={20} />
                           </div>
@@ -286,7 +292,7 @@ const Dashboard: React.FC = () => {
 
                       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
-                          <h3 className="text-black text-sm ">Staff Members</h3>
+                          <h3 className="text-black text-sm ">{t('dashboard.staffMembers')}</h3>
                           <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                             <UserCircle size={20} />
                           </div>
@@ -305,7 +311,7 @@ const Dashboard: React.FC = () => {
                   {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 lg:col-span-2">
                       <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-black">Revenue Growth</h3>
+                        <h3 className="text-lg font-bold text-black">{t('dashboard.revenueGrowth')}</h3>
                         <select className="bg-slate-50 border border-slate-200 text-sm rounded-lg px-3 py-1 outline-none text-slate-600">
                           <option>This Year</option>
                           <option>Last Year</option>
@@ -337,7 +343,7 @@ const Dashboard: React.FC = () => {
                   {/* Patient Visits Chart */}
                   <div className={`bg-white p-6 rounded-xl shadow-sm border border-slate-200 ${!isAdmin ? 'lg:col-span-3' : 'lg:col-span-1'}`}>
                     <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-bold text-black">Weekly Footfall</h3>
+                      <h3 className="text-lg font-bold text-black">{t('dashboard.weeklyFootfall')}</h3>
                     </div>
                     <div className="h-72 w-full">
                       <ResponsiveContainer width="100%" height="100%">
@@ -361,13 +367,14 @@ const Dashboard: React.FC = () => {
           </>
         ) : (
           <div className="flex-1 flex flex-col h-full overflow-hidden">
-            <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4 flex items-center shrink-0">
+            <header className="bg-white shadow-sm border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0">
               <button 
                 onClick={() => navigate(-1)} 
                 className="flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors font-semibold"
               >
-                <ArrowLeft size={18} /> Back
+                <ArrowLeft size={18} /> {t('common.back')}
               </button>
+              <LanguageSwitcher />
             </header>
             <main className="flex-1 overflow-y-auto bg-slate-50 relative">
               <Outlet />

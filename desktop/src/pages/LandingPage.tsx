@@ -7,10 +7,14 @@ import {
 } from 'lucide-react';
 
 import { CreditCard } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 const LandingPage: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'half-yearly' | 'yearly'>('monthly');
   const [selectedPlanToUpgrade, setSelectedPlanToUpgrade] = useState<'starter' | 'pro' | 'enterprise'>('pro');
   const [processingPayment, setProcessingPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -31,6 +35,12 @@ const LandingPage: React.FC = () => {
     }, 2000);
   };
 
+  const getPrice = (plan: 'starter' | 'pro' | 'enterprise', cycle: 'monthly' | 'half-yearly' | 'yearly') => {
+    if (plan === 'starter') return cycle === 'monthly' ? '650' : cycle === 'half-yearly' ? '3,900' : '7,800';
+    if (plan === 'pro') return cycle === 'monthly' ? '1,150' : cycle === 'half-yearly' ? '6,900' : '13,800';
+    return cycle === 'monthly' ? '2,300' : cycle === 'half-yearly' ? '13,800' : '27,600';
+  };
+
   return (
     <div className="min-h-screen bg-white text-slate-900 font-sans selection:bg-[#6899B0]/20">
       {/* Navigation */}
@@ -41,16 +51,17 @@ const LandingPage: React.FC = () => {
             <img src="/dental_logo.png" alt="Q Dent Logo" className="h-28 md:h-32 scale-150 origin-left object-contain relative drop-shadow-[0_0_12px_rgba(104,153,176,0.8)]" />
           </div>
           <div className="hidden md:flex items-center gap-8 font-medium text-slate-600">
-            <a href="#features" className="hover:text-[#6899B0] transition-colors">Features</a>
-            <a href="#pricing" className="hover:text-[#6899B0] transition-colors">Pricing</a>
-            <a href="#testimonials" className="hover:text-[#6899B0] transition-colors">Testimonials</a>
+            <a href="#features" className="hover:text-[#6899B0] transition-colors">{t('landing.nav.features')}</a>
+            <a href="#pricing" className="hover:text-[#6899B0] transition-colors">{t('landing.nav.pricing')}</a>
+            <a href="#testimonials" className="hover:text-[#6899B0] transition-colors">{t('landing.nav.testimonials')}</a>
           </div>
           <div className="flex items-center gap-4">
+            <LanguageSwitcher />
             <Link to="/login" className="hidden md:block font-bold text-slate-600 hover:text-[#6899B0] transition-colors">
-              Log in
+              {t('landing.nav.logIn')}
             </Link>
             <Link to="/login" className="bg-[#6899B0] text-white px-6 py-2.5 rounded-full font-bold hover:bg-[#5D8799] transition-all shadow-md shadow-[#6899B0]/20 flex items-center gap-2">
-              Get Started
+              {t('landing.nav.getStarted')}
             </Link>
           </div>
         </div>
@@ -91,25 +102,25 @@ const LandingPage: React.FC = () => {
 
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 border border-white/30 text-sm font-bold text-white mb-8 shadow-[0_0_15px_rgba(255,255,255,0.2)] backdrop-blur-sm">
             <span className="flex h-2 w-2 rounded-full bg-white animate-pulse shadow-[0_0_8px_#ffffff]"></span>
-            Next-Gen Dental Management
+            {t('landing.hero.nextGen')}
           </div>
           
           <h1 className="text-5xl md:text-7xl font-black tracking-tight text-white mb-8 leading-tight drop-shadow-lg">
-            The intelligent OS for <br />
+            {t('landing.hero.osLine1')} <br />
             <span className="text-white drop-shadow-md">
-              modern clinics.
+              {t('landing.hero.osLine2')}
             </span>
           </h1>
           <p className="text-lg md:text-xl text-blue-50 mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
-            Streamline appointments, automate billing, manage inventory, and deliver exceptional patient care with our all-in-one platform.
+            {t('landing.hero.desc')}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <button onClick={() => handleBuyPlan('starter')} className="group w-full sm:w-auto bg-white text-[#6899B0] px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 transition-all shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:shadow-[0_0_40px_rgba(255,255,255,0.6)] flex items-center justify-center gap-3 relative overflow-hidden">
               <div className="absolute inset-0 bg-black/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-              <span className="relative z-10 flex items-center gap-2">Start Free Trial <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" /></span>
+              <span className="relative z-10 flex items-center gap-2">{t('landing.hero.startFreeTrial')} <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" /></span>
             </button>
             <a href="#features" className="w-full sm:w-auto bg-transparent text-white px-8 py-4 rounded-full font-bold text-lg border border-white/50 hover:border-white hover:bg-white/10 transition-all flex items-center justify-center">
-              View Features
+              {t('landing.hero.viewFeatures')}
             </a>
           </div>
         </div>
@@ -119,18 +130,18 @@ const LandingPage: React.FC = () => {
       <section id="features" className="py-24 bg-slate-50 border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">Everything you need to run your clinic</h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">Powerful features designed to reduce admin work and let you focus on what matters most: your patients.</p>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">{t('landing.features.title')}</h2>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto">{t('landing.features.desc')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { icon: <Clock />, title: 'Smart Scheduling', desc: 'Effortlessly manage appointments, block times, and send automated SMS/Email reminders to reduce no-shows.' },
-              { icon: <Activity />, title: 'EMR & Treatments', desc: 'Detailed patient histories, clinical notes, and treatment tracking with pre-built standardized templates.' },
-              { icon: <Shield />, title: 'Role-Based Access', desc: 'Secure your data with granular permissions for Doctors, Receptionists, and Admins across multiple clinics.' },
-              { icon: <Database />, title: 'Inventory Control', desc: 'Real-time stock tracking with auto-deductions during treatments and low-stock alerts.' },
-              { icon: <BarChart />, title: 'Advanced Billing', desc: 'Generate professional GST-compliant invoices, track partial payments, and monitor clinic expenses easily.' },
-              { icon: <Users />, title: 'Staff Management', desc: 'Track employee attendance, manage doctor schedules, and handle leave approvals from a single dashboard.' },
+              { icon: <Clock />, title: t('landing.features.f1.title'), desc: t('landing.features.f1.desc') },
+              { icon: <Activity />, title: t('landing.features.f2.title'), desc: t('landing.features.f2.desc') },
+              { icon: <Shield />, title: t('landing.features.f3.title'), desc: t('landing.features.f3.desc') },
+              { icon: <Database />, title: t('landing.features.f4.title'), desc: t('landing.features.f4.desc') },
+              { icon: <BarChart />, title: t('landing.features.f5.title'), desc: t('landing.features.f5.desc') },
+              { icon: <Users />, title: t('landing.features.f6.title'), desc: t('landing.features.f6.desc') },
             ].map((feature, i) => (
               <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
                 <div className="w-12 h-12 bg-blue-50 text-[#6899B0] rounded-xl flex items-center justify-center mb-6">
@@ -147,30 +158,38 @@ const LandingPage: React.FC = () => {
       {/* Pricing Section */}
       <section id="pricing" className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">Simple, transparent pricing</h2>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">Start with what you need, upgrade when you grow. No hidden fees or setup costs.</p>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">{t('landing.pricing.title')}</h2>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto">{t('landing.pricing.desc')}</p>
+          </div>
+
+          <div className="flex justify-center mb-12">
+            <div className="bg-slate-100 p-1.5 rounded-xl inline-flex relative shadow-inner">
+              <button onClick={() => setBillingCycle('monthly')} className={`relative z-10 px-5 sm:px-6 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 ${billingCycle === 'monthly' ? 'text-slate-900 shadow-sm bg-white' : 'text-slate-500 hover:text-slate-700'}`}>{t('landing.pricing.monthly')}</button>
+              <button onClick={() => setBillingCycle('half-yearly')} className={`relative z-10 px-5 sm:px-6 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 ${billingCycle === 'half-yearly' ? 'text-slate-900 shadow-sm bg-white' : 'text-slate-500 hover:text-slate-700'}`}>{t('landing.pricing.halfYearly')} <span className="hidden sm:inline-block text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded ml-1 font-bold">{t('landing.pricing.save10')}</span></button>
+              <button onClick={() => setBillingCycle('yearly')} className={`relative z-10 px-5 sm:px-6 py-2.5 text-sm font-bold rounded-lg transition-all duration-300 ${billingCycle === 'yearly' ? 'text-slate-900 shadow-sm bg-white' : 'text-slate-500 hover:text-slate-700'}`}>{t('landing.pricing.yearly')} <span className="hidden sm:inline-block text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded ml-1 font-bold">{t('landing.pricing.save16')}</span></button>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Starter */}
             <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col">
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Starter</h3>
-              <p className="text-slate-500 text-sm mb-6">Perfect for solo practitioners.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">{t('landing.pricing.starter.title')}</h3>
+              <p className="text-slate-500 text-sm mb-6">{t('landing.pricing.starter.desc')}</p>
               <div className="mb-8">
-                <span className="text-4xl font-black text-slate-900">₹1,999</span>
-                <span className="text-slate-500 font-medium">/month</span>
+                <span className="text-4xl font-black text-slate-900">₹{getPrice('starter', billingCycle)}</span>
+                <span className="text-slate-500 font-medium">/{billingCycle === 'monthly' ? t('landing.pricing.month') : billingCycle === 'half-yearly' ? t('landing.pricing.sixMonths') : t('landing.pricing.year')}</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
                 {[
-                  { name: '1 Doctor Account', included: true },
-                  { name: 'Unlimited Patients', included: true },
-                  { name: 'Basic Appointments', included: true },
-                  { name: 'Standard Invoicing', included: true },
-                  { name: 'Email Support', included: true },
-                  { name: 'Staff Management', included: false },
-                  { name: 'Advanced Inventory', included: false },
-                  { name: 'Multi-Clinic Management', included: false },
+                  { name: t('landing.pricing.starter.i1'), included: true },
+                  { name: t('landing.pricing.starter.i2'), included: true },
+                  { name: t('landing.pricing.starter.i3'), included: true },
+                  { name: t('landing.pricing.starter.i4'), included: true },
+                  { name: t('landing.pricing.starter.i5'), included: true },
+                  { name: t('landing.pricing.starter.i6'), included: false },
+                  { name: t('landing.pricing.starter.i7'), included: false },
+                  { name: t('landing.pricing.starter.i8'), included: false },
                 ].map((item, i) => (
                   <li key={i} className={`flex items-center gap-3 font-medium ${item.included ? 'text-slate-600' : 'text-slate-400 opacity-60'}`}>
                     {item.included ? <CheckCircle2 size={18} className="text-green-500 shrink-0" /> : <X size={18} className="text-slate-400 shrink-0" />} 
@@ -179,31 +198,31 @@ const LandingPage: React.FC = () => {
                 ))}
               </ul>
               <button onClick={() => handleBuyPlan('starter')} className="w-full block text-center bg-slate-100 text-slate-900 font-bold py-3 rounded-xl hover:bg-slate-200 transition-colors">
-                Start Free Trial
+                {t('landing.hero.startFreeTrial')}
               </button>
             </div>
 
             {/* Pro */}
             <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-2xl shadow-slate-900/20 flex flex-col relative transform md:-translate-y-4">
               <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-[#6899B0] to-blue-500 text-white px-4 py-1 rounded-full text-xs font-bold tracking-wider uppercase">
-                Most Popular
+                {t('landing.pricing.pro.tag')}
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Professional</h3>
-              <p className="text-slate-400 text-sm mb-6">For growing clinics with staff.</p>
+              <h3 className="text-xl font-bold text-white mb-2">{t('landing.pricing.pro.title')}</h3>
+              <p className="text-slate-400 text-sm mb-6">{t('landing.pricing.pro.desc')}</p>
               <div className="mb-8">
-                <span className="text-4xl font-black text-white">₹3,499</span>
-                <span className="text-slate-400 font-medium">/month</span>
+                <span className="text-4xl font-black text-white">₹{getPrice('pro', billingCycle)}</span>
+                <span className="text-slate-400 font-medium">/{billingCycle === 'monthly' ? t('landing.pricing.month') : billingCycle === 'half-yearly' ? t('landing.pricing.sixMonths') : t('landing.pricing.year')}</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
                 {[
-                  { name: 'Up to 5 Staff Accounts', included: true },
-                  { name: 'Unlimited Patients', included: true },
-                  { name: 'Advanced Appointments', included: true },
-                  { name: 'Expense Tracking', included: true },
-                  { name: 'Priority Support', included: true },
-                  { name: 'Advanced Inventory', included: true },
-                  { name: 'Advanced Analytics', included: true },
-                  { name: 'Multi-Clinic Management', included: false },
+                  { name: t('landing.pricing.pro.i1'), included: true },
+                  { name: t('landing.pricing.pro.i2'), included: true },
+                  { name: t('landing.pricing.pro.i3'), included: true },
+                  { name: t('landing.pricing.pro.i4'), included: true },
+                  { name: t('landing.pricing.pro.i5'), included: true },
+                  { name: t('landing.pricing.pro.i6'), included: true },
+                  { name: t('landing.pricing.pro.i7'), included: true },
+                  { name: t('landing.pricing.pro.i8'), included: false },
                 ].map((item, i) => (
                   <li key={i} className={`flex items-center gap-3 font-medium ${item.included ? 'text-slate-200' : 'text-slate-500 opacity-60'}`}>
                     {item.included ? <CheckCircle2 size={18} className="text-[#6899B0] shrink-0" /> : <X size={18} className="text-slate-500 shrink-0" />} 
@@ -212,28 +231,28 @@ const LandingPage: React.FC = () => {
                 ))}
               </ul>
               <button onClick={() => handleBuyPlan('pro')} className="w-full block text-center bg-[#6899B0] text-white font-bold py-3 rounded-xl hover:bg-[#5D8799] transition-colors shadow-lg shadow-[#6899B0]/20">
-                Buy Professional Plan
+                {t('landing.pricing.pro.btn')}
               </button>
             </div>
 
             {/* Enterprise */}
             <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col">
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Enterprise</h3>
-              <p className="text-slate-500 text-sm mb-6">For multi-location clinic chains.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">{t('landing.pricing.enterprise.title')}</h3>
+              <p className="text-slate-500 text-sm mb-6">{t('landing.pricing.enterprise.desc')}</p>
               <div className="mb-8">
-                <span className="text-4xl font-black text-slate-900">₹6,999</span>
-                <span className="text-slate-500 font-medium">/month</span>
+                <span className="text-4xl font-black text-slate-900">₹{getPrice('enterprise', billingCycle)}</span>
+                <span className="text-slate-500 font-medium">/{billingCycle === 'monthly' ? t('landing.pricing.month') : billingCycle === 'half-yearly' ? t('landing.pricing.sixMonths') : t('landing.pricing.year')}</span>
               </div>
               <ul className="space-y-4 mb-8 flex-1">
                 {[
-                  { name: 'Unlimited Staff Accounts', included: true },
-                  { name: 'Unlimited Patients', included: true },
-                  { name: 'Custom Integrations', included: true },
-                  { name: 'Advanced RBAC Roles', included: true },
-                  { name: '24/7 Phone Support', included: true },
-                  { name: 'Advanced Inventory', included: true },
-                  { name: 'Dedicated Account Manager', included: true },
-                  { name: 'Multi-Clinic Management', included: true },
+                  { name: t('landing.pricing.enterprise.i1'), included: true },
+                  { name: t('landing.pricing.enterprise.i2'), included: true },
+                  { name: t('landing.pricing.enterprise.i3'), included: true },
+                  { name: t('landing.pricing.enterprise.i4'), included: true },
+                  { name: t('landing.pricing.enterprise.i5'), included: true },
+                  { name: t('landing.pricing.enterprise.i6'), included: true },
+                  { name: t('landing.pricing.enterprise.i7'), included: true },
+                  { name: t('landing.pricing.enterprise.i8'), included: true },
                 ].map((item, i) => (
                   <li key={i} className={`flex items-center gap-3 font-medium ${item.included ? 'text-slate-600' : 'text-slate-400 opacity-60'}`}>
                     {item.included ? <CheckCircle2 size={18} className="text-green-500 shrink-0" /> : <X size={18} className="text-slate-400 shrink-0" />} 
@@ -242,7 +261,7 @@ const LandingPage: React.FC = () => {
                 ))}
               </ul>
               <button onClick={() => handleBuyPlan('enterprise')} className="w-full block text-center bg-slate-100 text-slate-900 font-bold py-3 rounded-xl hover:bg-slate-200 transition-colors border border-slate-200">
-                Buy Enterprise Plan
+                {t('landing.pricing.enterprise.btn')}
               </button>
             </div>
           </div>
@@ -252,10 +271,10 @@ const LandingPage: React.FC = () => {
       {/* CTA Section */}
       <section className="py-24 bg-[#6899B0] text-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-5xl font-black mb-6 drop-shadow-md">Ready to digitize your clinic?</h2>
-          <p className="text-xl text-blue-50 mb-10 drop-shadow-sm">Join thousands of doctors who have modernized their practice, reduced administrative overhead, and improved patient care.</p>
+          <h2 className="text-3xl md:text-5xl font-black mb-6 drop-shadow-md">{t('landing.cta.title')}</h2>
+          <p className="text-xl text-blue-50 mb-10 drop-shadow-sm">{t('landing.cta.desc')}</p>
           <button onClick={() => handleBuyPlan('starter')} className="inline-flex items-center gap-2 bg-white text-[#6899B0] px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 hover:scale-105 transition-all shadow-xl shadow-white/10">
-            Create Your Free Account <ChevronRight size={20} />
+            {t('landing.cta.btn')} <ChevronRight size={20} />
           </button>
         </div>
       </section>
@@ -267,13 +286,13 @@ const LandingPage: React.FC = () => {
             <img src="/dental_logo.png" alt="Q Dent Logo" className="h-24 md:h-28 scale-125 origin-left object-contain brightness-0 invert opacity-80" />
           </div>
           <div className="flex gap-6 text-sm font-medium">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.privacy')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.terms')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing.footer.contact')}</a>
           </div>
           <div className="text-sm text-center md:text-right">
-            <p>© {new Date().getFullYear()} Q Dent. All rights reserved.</p>
-            <p className="mt-1 text-slate-500 font-medium">Powered By Qiro Tech Innovation Pvt.Ltd.</p>
+            <p>© {new Date().getFullYear()} {t('landing.footer.rights')}</p>
+            <p className="mt-1 text-slate-500 font-medium">{t('landing.footer.poweredBy')}</p>
           </div>
         </div>
       </footer>
@@ -293,8 +312,8 @@ const LandingPage: React.FC = () => {
                  </div>
                </div>
                <div className="text-right">
-                  <p className="text-white/60 text-xs">Amount</p>
-                  <p className="font-semibold text-lg">₹{selectedPlanToUpgrade === 'pro' ? '3,499' : selectedPlanToUpgrade === 'enterprise' ? '6,999' : '1,999'}</p>
+                  <p className="text-white/60 text-xs">Amount ({billingCycle})</p>
+                  <p className="font-semibold text-lg">₹{getPrice(selectedPlanToUpgrade, billingCycle)}</p>
                </div>
             </div>
             
@@ -347,7 +366,7 @@ const LandingPage: React.FC = () => {
                         Processing...
                       </>
                     ) : (
-                      `Pay ₹${selectedPlanToUpgrade === 'pro' ? '3,499' : selectedPlanToUpgrade === 'enterprise' ? '6,999' : '1,999'}`
+                      `Pay ₹${getPrice(selectedPlanToUpgrade, billingCycle)}`
                     )}
                   </button>
                   <div className="flex justify-between items-center mt-3 px-1">

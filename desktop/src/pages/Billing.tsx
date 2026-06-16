@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { FileText, Download, Plus, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Billing: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'invoices' | 'pending'>('invoices');
   const [invoices, setInvoices] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
@@ -109,15 +111,15 @@ const Billing: React.FC = () => {
     <div className="p-8 max-w-7xl mx-auto relative">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Billing & Revenue</h1>
-          <p className="text-slate-500 text-sm mt-1">Manage patient invoices and track pending payments.</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('billing.title')}</h1>
+          <p className="text-slate-500 text-sm mt-1">{t('billing.subtitle')}</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-all font-semibold shadow-sm"
         >
           <Plus size={18} />
-          New Invoice
+          {t('billing.newInvoice')}
         </button>
       </div>
 
@@ -128,7 +130,7 @@ const Billing: React.FC = () => {
             activeTab === 'invoices' ? 'border-b-2 border-[#6899B0] text-[#6899B0]' : 'text-slate-500 hover:text-slate-900'
           }`}
         >
-          All Invoices
+          {t('billing.allInvoices')}
         </button>
         <button
           onClick={() => setActiveTab('pending')}
@@ -136,7 +138,7 @@ const Billing: React.FC = () => {
             activeTab === 'pending' ? 'border-b-2 border-orange-500 text-orange-600' : 'text-slate-500 hover:text-slate-900'
           }`}
         >
-          Pending Dues
+          {t('billing.pendingDues')}
           {pendingInvoices.length > 0 && (
             <span className="bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full text-xs font-bold">{pendingInvoices.length}</span>
           )}
@@ -152,12 +154,12 @@ const Billing: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
-                <th className="p-4 font-bold">Invoice #</th>
-                <th className="p-4 font-bold">Date</th>
-                <th className="p-4 font-bold">Patient</th>
-                <th className="p-4 font-bold">Amount</th>
-                <th className="p-4 font-bold">Status</th>
-                <th className="p-4 font-bold text-right">Actions</th>
+                <th className="p-4 font-bold">{t('billing.invoiceNo')}</th>
+                <th className="p-4 font-bold">{t('billing.date')}</th>
+                <th className="p-4 font-bold">{t('billing.patient')}</th>
+                <th className="p-4 font-bold">{t('billing.amount')}</th>
+                <th className="p-4 font-bold">{t('billing.status')}</th>
+                <th className="p-4 font-bold text-right">{t('billing.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -192,7 +194,7 @@ const Billing: React.FC = () => {
                   <td colSpan={6} className="p-8 text-center text-black">
                     <div className="flex flex-col items-center justify-center">
                       <FileText size={48} className="text-slate-300 mb-4" />
-                      <p>No invoices found in this view.</p>
+                      <p>{t('billing.noInvoices')}</p>
                     </div>
                   </td>
                 </tr>
@@ -205,17 +207,17 @@ const Billing: React.FC = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-6">Create New Invoice</h2>
+            <h2 className="text-xl font-bold mb-6">{t('billing.createInvoice')}</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-1">Patient</label>
+                <label className="block text-sm font-medium mb-1">{t('billing.patient')}</label>
                 <select 
                   required 
                   className="w-full border p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none"
                   value={formData.patient_id}
                   onChange={e => setFormData({...formData, patient_id: e.target.value})}
                 >
-                  <option value="">Select Patient...</option>
+                  <option value="">{t('billing.selectPatient')}</option>
                   {patients.map(p => (
                     <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.mobile})</option>
                   ))}
@@ -224,9 +226,9 @@ const Billing: React.FC = () => {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium">Services & Items</label>
+                  <label className="block text-sm font-medium">{t('billing.servicesItems')}</label>
                   <button type="button" onClick={addItem} className="text-sm text-[#6899B0] font-medium hover:text-[#5D8799] flex items-center gap-1">
-                    <Plus size={14} /> Add Item
+                    <Plus size={14} /> {t('billing.addItem')}
                   </button>
                 </div>
                 
@@ -235,8 +237,9 @@ const Billing: React.FC = () => {
                     <div key={index} className="flex gap-2 items-center bg-slate-50 p-2 rounded border border-slate-200">
                       <input 
                         required 
+                        list="dental-services"
                         type="text" 
-                        placeholder="Service name..."
+                        placeholder={t('billing.serviceName')}
                         className="flex-1 p-2 border rounded text-sm outline-none"
                         value={item.service_name}
                         onChange={e => handleItemChange(index, 'service_name', e.target.value)}
@@ -244,7 +247,7 @@ const Billing: React.FC = () => {
                       <input 
                         required 
                         type="number" 
-                        placeholder="Qty"
+                        placeholder={t('billing.qty')}
                         min="1"
                         className="w-20 p-2 border rounded text-sm outline-none"
                         value={item.quantity}
@@ -253,7 +256,7 @@ const Billing: React.FC = () => {
                       <input 
                         required 
                         type="number" 
-                        placeholder="Price"
+                        placeholder={t('billing.price')}
                         min="0"
                         className="w-24 p-2 border rounded text-sm outline-none"
                         value={item.unit_price}
@@ -271,15 +274,50 @@ const Billing: React.FC = () => {
                     </div>
                   ))}
                 </div>
+                <datalist id="dental-services">
+                  <option value="Consultation" />
+                  <option value="Root Canal Treatment (RCT)" />
+                  <option value="Re-RCT (Retreatment)" />
+                  <option value="Tooth Extraction (Simple)" />
+                  <option value="Tooth Extraction (Surgical/Impaction)" />
+                  <option value="Dental Crown (PFM)" />
+                  <option value="Dental Crown (Zirconia/E-max)" />
+                  <option value="Dental Bridge (PFM/Zirconia)" />
+                  <option value="Dental Implant Placement" />
+                  <option value="Implant Crown/Prosthesis" />
+                  <option value="Teeth Cleaning / Scaling & Polishing" />
+                  <option value="Deep Scaling / Root Planing" />
+                  <option value="Teeth Whitening / Bleaching" />
+                  <option value="Dental Filling (Composite)" />
+                  <option value="Dental Filling (GIC / Amalgam)" />
+                  <option value="Orthodontic Braces (Metal)" />
+                  <option value="Orthodontic Braces (Ceramic)" />
+                  <option value="Clear Aligners" />
+                  <option value="Complete Denture" />
+                  <option value="Removable Partial Denture (RPD)" />
+                  <option value="Cast Partial Denture (CPD)" />
+                  <option value="Veneers / Laminates" />
+                  <option value="Fluoride Treatment" />
+                  <option value="Pit and Fissure Sealants" />
+                  <option value="Pulpectomy (Kids)" />
+                  <option value="Stainless Steel Crown (Kids)" />
+                  <option value="Periodontal Flap Surgery" />
+                  <option value="Gingivectomy / Gingivoplasty" />
+                  <option value="Bone Grafting" />
+                  <option value="Night Guard / Splint" />
+                  <option value="X-Ray (IOPA)" />
+                  <option value="X-Ray (OPG)" />
+                  <option value="CBCT Scan" />
+                </datalist>
               </div>
 
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-black">Subtotal:</span>
+                  <span className="text-black">{t('billing.subtotal')}</span>
                   <span className="font-medium">₹{totalAmount}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-black">Discount (₹):</span>
+                  <span className="text-black">{t('billing.discount')}</span>
                   <input 
                     type="number" 
                     min="0"
@@ -289,7 +327,7 @@ const Billing: React.FC = () => {
                   />
                 </div>
                 <div className="flex justify-between items-center text-sm">
-                  <span className="text-black">Tax (₹):</span>
+                  <span className="text-black">{t('billing.tax')}</span>
                   <input 
                     type="number" 
                     min="0"
@@ -299,15 +337,15 @@ const Billing: React.FC = () => {
                   />
                 </div>
                 <div className="flex justify-between items-center pt-2 border-t text-lg font-bold">
-                  <span>Total Amount:</span>
+                  <span>{t('billing.totalAmount')}</span>
                   <span>₹{finalAmount}</span>
                 </div>
               </div>
 
               <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">Cancel</button>
+                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">{t('billing.cancel')}</button>
                 <button type="submit" disabled={submitting || finalAmount < 0} className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] disabled:opacity-50">
-                  {submitting ? 'Saving...' : 'Create Invoice'}
+                  {submitting ? t('billing.saving') : t('billing.createBtn')}
                 </button>
               </div>
             </form>

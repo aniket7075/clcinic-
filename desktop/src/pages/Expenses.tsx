@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { IndianRupee, Plus, Trash2, Calendar, FileText, Tag } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Expenses: React.FC = () => {
+  const { t } = useTranslation();
   const [expenses, setExpenses] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -48,7 +50,7 @@ const Expenses: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this expense?')) return;
+    if (!confirm(t('expenses.deleteConfirm'))) return;
     try {
       await api.delete(`/expenses/${id}`);
       fetchExpenses();
@@ -65,16 +67,16 @@ const Expenses: React.FC = () => {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <IndianRupee className="text-[#6899B0]" size={28} /> Expense Management
+            <IndianRupee className="text-[#6899B0]" size={28} /> {t('expenses.title')}
           </h1>
-          <p className="text-slate-500 text-sm mt-1">Track and manage your clinic's operational expenses.</p>
+          <p className="text-slate-500 text-sm mt-1">{t('expenses.subtitle')}</p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-all font-semibold shadow-sm"
         >
           <Plus size={18} />
-          Record Expense
+          {t('expenses.recordExpenseBtn')}
         </button>
       </div>
 
@@ -87,11 +89,11 @@ const Expenses: React.FC = () => {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
-                <th className="p-4 font-bold">Date</th>
-                <th className="p-4 font-bold">Category</th>
-                <th className="p-4 font-bold">Description</th>
-                <th className="p-4 font-bold">Amount</th>
-                <th className="p-4 font-bold text-right">Actions</th>
+                <th className="p-4 font-bold">{t('expenses.date')}</th>
+                <th className="p-4 font-bold">{t('expenses.category')}</th>
+                <th className="p-4 font-bold">{t('expenses.description')}</th>
+                <th className="p-4 font-bold">{t('expenses.amount')}</th>
+                <th className="p-4 font-bold text-right">{t('expenses.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -131,8 +133,8 @@ const Expenses: React.FC = () => {
                 <tr>
                   <td colSpan={5} className="p-12 text-center text-slate-500">
                     <IndianRupee size={48} className="mx-auto text-slate-300 mb-4" />
-                    <h3 className="text-lg font-bold text-slate-900 mb-1">No expenses found</h3>
-                    <p>Record your first expense to see it here.</p>
+                    <h3 className="text-lg font-bold text-slate-900 mb-1">{t('expenses.noExpenses')}</h3>
+                    <p>{t('expenses.noExpensesSub')}</p>
                   </td>
                 </tr>
               )}
@@ -146,12 +148,12 @@ const Expenses: React.FC = () => {
         <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col">
             <div className="px-6 py-4 border-b border-slate-100 bg-slate-50 shrink-0">
-              <h2 className="text-xl font-bold text-slate-900">Record New Expense</h2>
+              <h2 className="text-xl font-bold text-slate-900">{t('expenses.newExpenseTitle')}</h2>
             </div>
             <div className="p-6 overflow-y-auto">
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><Tag size={16} className="text-[#6899B0]"/> Category</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><Tag size={16} className="text-[#6899B0]"/> {t('expenses.category')}</label>
                   <select 
                     required 
                     className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none font-medium text-slate-900 bg-white transition-all"
@@ -163,7 +165,7 @@ const Expenses: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><IndianRupee size={16} className="text-[#6899B0]"/> Amount</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><IndianRupee size={16} className="text-[#6899B0]"/> {t('expenses.amount')}</label>
                   <input 
                     required 
                     type="number"
@@ -176,7 +178,7 @@ const Expenses: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><Calendar size={16} className="text-[#6899B0]"/> Date</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><Calendar size={16} className="text-[#6899B0]"/> {t('expenses.date')}</label>
                   <input 
                     required 
                     type="date"
@@ -187,7 +189,7 @@ const Expenses: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><FileText size={16} className="text-[#6899B0]"/> Description</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5"><FileText size={16} className="text-[#6899B0]"/> {t('expenses.description')}</label>
                   <textarea 
                     className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none font-medium text-slate-900 bg-white transition-all min-h-[100px]"
                     value={formData.description}
@@ -196,9 +198,9 @@ const Expenses: React.FC = () => {
                 </div>
 
                 <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
-                  <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                  <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 text-slate-600 font-bold hover:bg-slate-100 rounded-lg transition-colors">{t('expenses.cancel')}</button>
                   <button type="submit" disabled={submitting} className="px-5 py-2.5 bg-[#6899B0] font-bold text-white rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-all shadow-sm">
-                    {submitting ? 'Saving...' : 'Save Expense'}
+                    {submitting ? t('expenses.saving') : t('expenses.saveExpense')}
                   </button>
                 </div>
               </form>

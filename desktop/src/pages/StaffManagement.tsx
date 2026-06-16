@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { UserPlus, Trash2, CheckCircle, XCircle, Calendar, Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Profile {
   id: string;
@@ -22,6 +23,7 @@ interface Staff {
 }
 
 const StaffManagement: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'overview' | 'attendance' | 'leaves' | 'schedule'>('overview');
   const [staffList, setStaffList] = useState<Staff[]>([]);
   
@@ -179,13 +181,13 @@ const StaffManagement: React.FC = () => {
         <button
           key={tab}
           onClick={() => setActiveTab(tab as any)}
-          className={`pb-3 font-semibold capitalize transition-colors ${
+          className={`pb-3 font-semibold transition-colors ${
             activeTab === tab
               ? 'border-b-2 border-[#6899B0] text-[#6899B0]'
               : 'text-slate-500 hover:text-slate-900'
           }`}
         >
-          {tab}
+          {t(`staff.tabs.${tab}`)}
         </button>
       ))}
     </div>
@@ -194,13 +196,13 @@ const StaffManagement: React.FC = () => {
   const renderOverview = () => (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-slate-900">Staff List</h2>
+        <h2 className="text-xl font-bold text-slate-900">{t('staff.staffList')}</h2>
         <button
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white font-semibold rounded-lg hover:bg-[#5D8799] transition-all shadow-sm"
         >
           <UserPlus size={18} />
-          Add Staff
+          {t('staff.addStaffBtn')}
         </button>
       </div>
 
@@ -208,11 +210,11 @@ const StaffManagement: React.FC = () => {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
-              <th className="p-4 font-bold">Employee ID</th>
-              <th className="p-4 font-bold">Name</th>
-              <th className="p-4 font-bold">Role</th>
-              <th className="p-4 font-bold">Email</th>
-              <th className="p-4 font-bold">Actions</th>
+              <th className="p-4 font-bold">{t('staff.employeeId')}</th>
+              <th className="p-4 font-bold">{t('staff.name')}</th>
+              <th className="p-4 font-bold">{t('staff.role')}</th>
+              <th className="p-4 font-bold">{t('staff.email')}</th>
+              <th className="p-4 font-bold">{t('staff.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -244,7 +246,7 @@ const StaffManagement: React.FC = () => {
             ))}
             {staffList.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-12 text-center text-slate-500">No staff found.</td>
+                <td colSpan={5} className="p-12 text-center text-slate-500">{t('staff.noStaff')}</td>
               </tr>
             )}
           </tbody>
@@ -257,17 +259,17 @@ const StaffManagement: React.FC = () => {
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
         <div>
-          <h2 className="text-lg font-semibold text-black">Daily Attendance</h2>
-          <p className="text-sm text-black">Mark attendance for today: {new Date().toLocaleDateString()}</p>
+          <h2 className="text-lg font-semibold text-black">{t('staff.dailyAttendance')}</h2>
+          <p className="text-sm text-black">{t('staff.markAttendanceFor')} {new Date().toLocaleDateString()}</p>
         </div>
       </div>
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="bg-slate-50 border-b border-slate-200 text-black text-sm">
-            <th className="p-4">Staff Name</th>
-            <th className="p-4">Role</th>
-            <th className="p-4">Today's Status</th>
-            <th className="p-4">Mark Attendance</th>
+            <th className="p-4">{t('staff.staffName')}</th>
+            <th className="p-4">{t('staff.role')}</th>
+            <th className="p-4">{t('staff.todayStatus')}</th>
+            <th className="p-4">{t('staff.markAttendance')}</th>
           </tr>
         </thead>
         <tbody>
@@ -288,15 +290,15 @@ const StaffManagement: React.FC = () => {
                       {todayRecord.status}
                     </span>
                   ) : (
-                    <span className="text-slate-400 italic text-sm">Not marked</span>
+                    <span className="text-slate-400 italic text-sm">{t('staff.notMarked')}</span>
                   )}
                 </td>
                 <td className="p-4 flex gap-2">
                   <button onClick={() => handleMarkAttendance(staff.id, 'PRESENT')} className="flex items-center gap-1 px-3 py-1 bg-green-50 text-green-700 text-xs rounded hover:bg-green-100 font-medium">
-                    <CheckCircle size={14} /> Present
+                    <CheckCircle size={14} /> {t('staff.present')}
                   </button>
                   <button onClick={() => handleMarkAttendance(staff.id, 'ABSENT')} className="flex items-center gap-1 px-3 py-1 bg-red-50 text-red-700 text-xs rounded hover:bg-red-100 font-medium">
-                    <XCircle size={14} /> Absent
+                    <XCircle size={14} /> {t('staff.absent')}
                   </button>
                 </td>
               </tr>
@@ -310,25 +312,25 @@ const StaffManagement: React.FC = () => {
   const renderLeaves = () => (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-black">Leave Requests</h2>
+        <h2 className="text-xl font-semibold text-black">{t('staff.leaveRequests')}</h2>
         <button
           onClick={() => setShowLeaveModal(true)}
           className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]"
         >
           <Plus size={18} />
-          Apply Leave
+          {t('staff.applyLeaveBtn')}
         </button>
       </div>
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200 text-black text-sm">
-              <th className="p-4">Staff</th>
-              <th className="p-4">Type</th>
-              <th className="p-4">Dates</th>
-              <th className="p-4">Reason</th>
-              <th className="p-4">Status</th>
-              <th className="p-4">Actions</th>
+              <th className="p-4">{t('staff.staffMember')}</th>
+              <th className="p-4">{t('staff.type')}</th>
+              <th className="p-4">{t('staff.dates')}</th>
+              <th className="p-4">{t('staff.reason')}</th>
+              <th className="p-4">{t('staff.status')}</th>
+              <th className="p-4">{t('staff.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -352,8 +354,8 @@ const StaffManagement: React.FC = () => {
                 <td className="p-4 flex gap-2">
                   {leave.status === 'PENDING' && (
                     <>
-                      <button onClick={() => handleLeaveStatusUpdate(leave.id, 'APPROVED')} className="text-green-600 hover:text-green-800 font-medium text-xs">Approve</button>
-                      <button onClick={() => handleLeaveStatusUpdate(leave.id, 'REJECTED')} className="text-red-600 hover:text-red-800 font-medium text-xs">Reject</button>
+                      <button onClick={() => handleLeaveStatusUpdate(leave.id, 'APPROVED')} className="text-green-600 hover:text-green-800 font-medium text-xs">{t('staff.approve')}</button>
+                      <button onClick={() => handleLeaveStatusUpdate(leave.id, 'REJECTED')} className="text-red-600 hover:text-red-800 font-medium text-xs">{t('staff.reject')}</button>
                     </>
                   )}
                 </td>
@@ -361,7 +363,7 @@ const StaffManagement: React.FC = () => {
             ))}
             {leaves.length === 0 && (
               <tr>
-                <td colSpan={6} className="p-8 text-center text-black">No leave requests found.</td>
+                <td colSpan={6} className="p-8 text-center text-black">{t('staff.noLeaveRequests')}</td>
               </tr>
             )}
           </tbody>
@@ -373,13 +375,13 @@ const StaffManagement: React.FC = () => {
   const renderSchedule = () => (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-black">Doctor Schedules</h2>
+        <h2 className="text-xl font-semibold text-black">{t('staff.doctorSchedules')}</h2>
         <button
           onClick={() => setShowScheduleModal(true)}
           className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]"
         >
           <Calendar size={18} />
-          Update Schedule
+          {t('staff.updateScheduleBtn')}
         </button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -411,8 +413,8 @@ const StaffManagement: React.FC = () => {
   return (
     <div className="p-8 max-w-7xl mx-auto relative">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Staff & HR</h1>
-        <p className="text-slate-500 text-sm mt-1">Manage employees, track attendance, and oversee schedules.</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('staff.title')}</h1>
+        <p className="text-slate-500 text-sm mt-1">{t('staff.subtitle')}</p>
       </div>
       
       {renderTabs()}
@@ -434,52 +436,52 @@ const StaffManagement: React.FC = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Add New Staff</h2>
+            <h2 className="text-xl font-bold mb-4">{t('staff.addNewStaffTitle')}</h2>
             <form onSubmit={handleCreateStaff} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">First Name</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.firstName')}</label>
                   <input required className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.firstName} onChange={e => setFormData({...formData, firstName: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Last Name</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.lastName')}</label>
                   <input required className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.lastName} onChange={e => setFormData({...formData, lastName: e.target.value})} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.email')}</label>
                   <input required type="email" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Password</label>
-                  <input required type="password" placeholder="At least 6 chars" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                  <label className="block text-sm font-medium mb-1">{t('staff.password')}</label>
+                  <input required type="password" placeholder={t('staff.passwordPlaceholder')} className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Employee ID</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.employeeId')}</label>
                   <input required className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.employeeId} onChange={e => setFormData({...formData, employeeId: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Avatar URL (Optional)</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.avatarUrl')}</label>
                   <input type="url" placeholder="https://example.com/avatar.jpg" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.avatarUrl} onChange={e => setFormData({...formData, avatarUrl: e.target.value})} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Role</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.role')}</label>
                   <select className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
-                    <option value="DOCTOR">Doctor</option>
-                    <option value="RECEPTIONIST">Receptionist</option>
-                    <option value="ASSISTANT">Assistant</option>
-                    <option value="CLINIC_ADMIN">Clinic Admin</option>
+                    <option value="DOCTOR">{t('staff.doctor')}</option>
+                    <option value="RECEPTIONIST">{t('staff.receptionist')}</option>
+                    <option value="ASSISTANT">{t('staff.assistant')}</option>
+                    <option value="CLINIC_ADMIN">{t('staff.clinicAdmin')}</option>
                   </select>
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]">Add Staff</button>
+                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">{t('staff.cancel')}</button>
+                <button type="submit" className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]">{t('staff.addStaffBtn')}</button>
               </div>
             </form>
           </div>
@@ -490,40 +492,40 @@ const StaffManagement: React.FC = () => {
       {showLeaveModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-xl font-bold mb-4">Apply for Leave</h2>
+            <h2 className="text-xl font-bold mb-4">{t('staff.applyLeaveTitle')}</h2>
             <form onSubmit={handleApplyLeave} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Staff Member</label>
+                <label className="block text-sm font-medium mb-1">{t('staff.staffMember')}</label>
                 <select required className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={leaveFormData.staff_id} onChange={e => setLeaveFormData({...leaveFormData, staff_id: e.target.value})}>
-                  <option value="">Select Staff...</option>
+                  <option value="">{t('staff.selectStaff')}</option>
                   {staffList.map(s => <option key={s.id} value={s.id}>{s.profiles?.first_name} {s.profiles?.last_name}</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Start Date</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.startDate')}</label>
                   <input required type="date" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={leaveFormData.start_date} onChange={e => setLeaveFormData({...leaveFormData, start_date: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">End Date</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.endDate')}</label>
                   <input required type="date" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={leaveFormData.end_date} onChange={e => setLeaveFormData({...leaveFormData, end_date: e.target.value})} />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Leave Type</label>
+                <label className="block text-sm font-medium mb-1">{t('staff.leaveType')}</label>
                 <select className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={leaveFormData.type} onChange={e => setLeaveFormData({...leaveFormData, type: e.target.value})}>
-                  <option value="SICK">Sick Leave</option>
-                  <option value="CASUAL">Casual Leave</option>
-                  <option value="VACATION">Vacation</option>
+                  <option value="SICK">{t('staff.sickLeave')}</option>
+                  <option value="CASUAL">{t('staff.casualLeave')}</option>
+                  <option value="VACATION">{t('staff.vacation')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Reason</label>
+                <label className="block text-sm font-medium mb-1">{t('staff.reason')}</label>
                 <textarea required className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={leaveFormData.reason} onChange={e => setLeaveFormData({...leaveFormData, reason: e.target.value})} />
               </div>
               <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setShowLeaveModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]">Submit Application</button>
+                <button type="button" onClick={() => setShowLeaveModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">{t('staff.cancel')}</button>
+                <button type="submit" className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]">{t('staff.submitApplication')}</button>
               </div>
             </form>
           </div>
@@ -534,34 +536,34 @@ const StaffManagement: React.FC = () => {
       {showScheduleModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <h2 className="text-xl font-bold mb-4">Update Schedule</h2>
+            <h2 className="text-xl font-bold mb-4">{t('staff.updateScheduleTitle')}</h2>
             <form onSubmit={handleUpdateSchedule} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Staff Member</label>
+                <label className="block text-sm font-medium mb-1">{t('staff.staffMember')}</label>
                 <select required className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={scheduleFormData.staff_id} onChange={e => setScheduleFormData({...scheduleFormData, staff_id: e.target.value})}>
-                  <option value="">Select Staff...</option>
+                  <option value="">{t('staff.selectStaff')}</option>
                   {staffList.filter(s => s.profiles?.role === 'DOCTOR').map(s => <option key={s.id} value={s.id}>Dr. {s.profiles?.last_name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Day of Week</label>
+                <label className="block text-sm font-medium mb-1">{t('staff.dayOfWeek')}</label>
                 <select className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={scheduleFormData.day_of_week} onChange={e => setScheduleFormData({...scheduleFormData, day_of_week: e.target.value})}>
                   {['MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'].map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Start Time</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.startTime')}</label>
                   <input required type="time" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={scheduleFormData.start_time} onChange={e => setScheduleFormData({...scheduleFormData, start_time: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">End Time</label>
+                  <label className="block text-sm font-medium mb-1">{t('staff.endTime')}</label>
                   <input required type="time" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={scheduleFormData.end_time} onChange={e => setScheduleFormData({...scheduleFormData, end_time: e.target.value})} />
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-6">
-                <button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button type="submit" className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]">Save Schedule</button>
+                <button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">{t('staff.cancel')}</button>
+                <button type="submit" className="px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799]">{t('staff.saveSchedule')}</button>
               </div>
             </form>
           </div>

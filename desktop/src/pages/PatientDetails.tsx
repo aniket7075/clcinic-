@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import api from '../api/axios';
 import { Plus, Trash2, Pill, FileText, Download, MessageCircle, Image as ImageIcon, ClipboardList } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const ToothIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -12,6 +13,7 @@ const ToothIcon = ({ className }: { className?: string }) => (
 );
 
 const PatientDetails: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const [patient, setPatient] = useState<any>(null);
   const [timeline, setTimeline] = useState<{history: any[], prescriptions: any[], appointments: any[]}>({ history: [], prescriptions: [], appointments: [] });
@@ -331,14 +333,14 @@ const PatientDetails: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2 bg-[#E0EEF5] text-[#5D8799] font-medium rounded-lg hover:bg-blue-100 transition-colors"
             >
               <FileText size={18} />
-              Add Clinical Note
+              {t('patientDetails.clinicalNoteBtn')}
             </button>
             <button 
               onClick={() => setShowPrescriptionModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-[oklch(0.78_0.03_206.04)]/10 text-[oklch(0.6_0.03_206.04)] font-medium rounded-lg hover:bg-[oklch(0.78_0.03_206.04)]/20 transition-colors"
             >
               <Pill size={18} />
-              Add Prescription
+              {t('patientDetails.prescriptionBtn')}
             </button>
           </div>
         )}
@@ -346,41 +348,58 @@ const PatientDetails: React.FC = () => {
 
       <div className="flex space-x-4 mb-8 border-b border-slate-200">
         <button onClick={() => setActiveTab('overview')} className={`pb-3 px-4 font-medium transition-colors flex items-center gap-2 ${activeTab === 'overview' ? 'border-b-2 border-[#6899B0] text-[#5D8799]' : 'text-slate-500 hover:text-black'}`}>
-          <FileText size={18} /> Overview & Chart
+          <FileText size={18} /> {t('patientDetails.overviewChartTab')}
         </button>
         <button onClick={() => setActiveTab('plans')} className={`pb-3 px-4 font-medium transition-colors flex items-center gap-2 ${activeTab === 'plans' ? 'border-b-2 border-[#6899B0] text-[#5D8799]' : 'text-slate-500 hover:text-black'}`}>
-          <ClipboardList size={18} /> Treatment Plans
+          <ClipboardList size={18} /> {t('patientDetails.treatmentPlansTab')}
         </button>
         <button onClick={() => setActiveTab('documents')} className={`pb-3 px-4 font-medium transition-colors flex items-center gap-2 ${activeTab === 'documents' ? 'border-b-2 border-[#6899B0] text-[#5D8799]' : 'text-slate-500 hover:text-black'}`}>
-          <ImageIcon size={18} /> Imaging & Documents
+          <ImageIcon size={18} /> {t('patientDetails.imagingDocsTab')}
         </button>
       </div>
 
       {showNoteForm && isDoctor && (
         <div className="bg-[#E0EEF5]/50 p-6 rounded-xl border border-blue-100 mb-8">
           <h3 className="font-semibold text-blue-900 mb-4 flex items-center gap-2">
-            <FileText size={18} /> Record New Clinical Note
+            <FileText size={18} /> {t('patientDetails.recordNoteTitle')}
           </h3>
           <form onSubmit={handleAddNote} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1 text-black">Symptoms</label>
-                <input required type="text" className="w-full border border-slate-200 p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none bg-white" value={noteForm.symptoms} onChange={e => setNoteForm({...noteForm, symptoms: e.target.value})} placeholder="e.g. Toothache, Swelling..." />
+                <label className="block text-sm font-medium mb-1 text-black">{t('patientDetails.symptoms')}</label>
+                <input required list="dental-symptoms" type="text" className="w-full border border-slate-200 p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none bg-white" value={noteForm.symptoms} onChange={e => setNoteForm({...noteForm, symptoms: e.target.value})} placeholder="e.g. Toothache, Swelling..." />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-black">Diagnosis</label>
-                <input required type="text" className="w-full border border-slate-200 p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none bg-white" value={noteForm.diagnosis} onChange={e => setNoteForm({...noteForm, diagnosis: e.target.value})} placeholder="e.g. Dental Caries..." />
+                <label className="block text-sm font-medium mb-1 text-black">{t('patientDetails.diagnosis')}</label>
+                <input required list="dental-diagnosis" type="text" className="w-full border border-slate-200 p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none bg-white" value={noteForm.diagnosis} onChange={e => setNoteForm({...noteForm, diagnosis: e.target.value})} placeholder="e.g. Dental Caries..." />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-black">Treatment Provided</label>
-              <input required type="text" className="w-full border border-slate-200 p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none bg-white" value={noteForm.treatment} onChange={e => setNoteForm({...noteForm, treatment: e.target.value})} placeholder="e.g. Root Canal Therapy..." />
+              <label className="block text-sm font-medium mb-1 text-black">{t('patientDetails.treatmentProvided')}</label>
+              <input required list="dental-treatments" type="text" className="w-full border border-slate-200 p-2 rounded focus:ring-2 focus:ring-[#6899B0] outline-none bg-white" value={noteForm.treatment} onChange={e => setNoteForm({...noteForm, treatment: e.target.value})} placeholder="e.g. Root Canal Therapy..." />
+              <datalist id="dental-treatments">
+                <option value="Root Canal Treatment (RCT)" />
+                <option value="Tooth Extraction" />
+                <option value="Dental Crown / Cap" />
+                <option value="Dental Bridge" />
+                <option value="Dental Implant" />
+                <option value="Teeth Cleaning / Scaling" />
+                <option value="Teeth Whitening" />
+                <option value="Dental Fillings" />
+                <option value="Orthodontic Braces" />
+                <option value="Clear Aligners" />
+                <option value="Dentures (Complete/Partial)" />
+                <option value="Veneers / Laminates" />
+                <option value="Fluoride Treatment" />
+                <option value="Periodontal (Gum) Therapy" />
+                <option value="Consultation" />
+              </datalist>
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-sm font-medium text-black">Additional Notes / Description</label>
+                <label className="block text-sm font-medium text-black">{t('patientDetails.additionalNotes')}</label>
                 <div className="flex gap-2">
-                  <span className="text-xs text-slate-500 font-medium">Quick Templates:</span>
+                  <span className="text-xs text-slate-500 font-medium">{t('patientDetails.quickTemplates')}</span>
                   <button 
                     type="button" 
                     onClick={() => setNoteForm({...noteForm, notes: noteForm.notes + 'Patient presented with pain in the affected region. LA administered. Access opened, canals located and cleaned. Working length established. Canals shaped and irrigated with NaOCl. Master cone radiograph taken. Canals obturated and sealed with temporary restoration. Post-op instructions given. Patient tolerated procedure well.\n'})}
@@ -412,9 +431,9 @@ const PatientDetails: React.FC = () => {
               ></textarea>
             </div>
             <div className="flex justify-end gap-3">
-              <button type="button" onClick={() => setShowNoteForm(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">Cancel</button>
+              <button type="button" onClick={() => setShowNoteForm(false)} className="px-4 py-2 text-black hover:bg-slate-100 rounded-lg">{t('patientDetails.cancel')}</button>
               <button type="submit" className="px-5 py-2 bg-[#6899B0] text-white font-medium rounded-lg hover:bg-[#5D8799] transition-colors">
-                Save Note
+                {t('patientDetails.saveNote')}
               </button>
             </div>
           </form>
@@ -424,11 +443,11 @@ const PatientDetails: React.FC = () => {
       {activeTab === 'overview' && (
         <>
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
-        <h2 className="text-xl font-bold text-black mb-6">Interactive Dental Chart (FDI Notation)</h2>
+        <h2 className="text-xl font-bold text-black mb-6">{t('patientDetails.interactiveChart')}</h2>
         <div className="flex flex-col gap-10">
           {/* Upper Jaw (Maxillary) */}
           <div className="relative">
-            <h3 className="text-sm font-bold text-black mb-6 text-center uppercase tracking-widest border-b border-slate-200 pb-2">Upper Jaw</h3>
+            <h3 className="text-sm font-bold text-black mb-6 text-center uppercase tracking-widest border-b border-slate-200 pb-2">{t('patientDetails.upperJaw')}</h3>
             <div className="flex justify-center gap-6">
               {/* Top Right (Quadrant 1) */}
               <div className="flex gap-2 border-r-2 border-slate-300 pr-6">
@@ -443,7 +462,7 @@ const PatientDetails: React.FC = () => {
           
           {/* Lower Jaw (Mandibular) */}
           <div className="relative">
-            <h3 className="text-sm font-bold text-black mb-6 text-center uppercase tracking-widest border-b border-slate-200 pb-2">Lower Jaw</h3>
+            <h3 className="text-sm font-bold text-black mb-6 text-center uppercase tracking-widest border-b border-slate-200 pb-2">{t('patientDetails.lowerJaw')}</h3>
             <div className="flex justify-center gap-6">
               {/* Bottom Right (Quadrant 4) */}
               <div className="flex gap-2 border-r-2 border-slate-300 pr-6">
@@ -459,13 +478,13 @@ const PatientDetails: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        <h2 className="text-xl font-bold text-black">Treatment Timeline</h2>
+        <h2 className="text-xl font-bold text-black">{t('patientDetails.treatmentTimeline')}</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Clinical Notes Column */}
           <div className="space-y-4">
             <h3 className="font-semibold text-black flex items-center gap-2 border-b pb-2">
-              <FileText size={18} /> Clinical History
+              <FileText size={18} /> {t('patientDetails.clinicalHistory')}
             </h3>
             {timeline.history.length > 0 ? (
               timeline.history.map((record, index) => (
@@ -482,14 +501,14 @@ const PatientDetails: React.FC = () => {
                 </div>
               ))
             ) : (
-              <p className="text-sm text-slate-400 p-4 bg-slate-50 rounded-lg border border-dashed border-slate-200">No clinical notes recorded.</p>
+              <p className="text-sm text-slate-400 p-4 bg-slate-50 rounded-lg border border-dashed border-slate-200">{t('patientDetails.noClinicalNotes')}</p>
             )}
           </div>
 
           {/* Prescriptions Column */}
           <div className="space-y-4">
             <h3 className="font-semibold text-black flex items-center gap-2 border-b pb-2">
-              <Pill size={18} /> Prescriptions
+              <Pill size={18} /> {t('patientDetails.prescriptions')}
             </h3>
             {timeline.prescriptions.length > 0 ? (
               timeline.prescriptions.map((px, index) => (
@@ -501,7 +520,7 @@ const PatientDetails: React.FC = () => {
                       className="text-black hover:text-[#6899B0] flex items-center gap-1"
                       title="Download PDF"
                     >
-                      <Download size={14} /> Download PDF
+                      <Download size={14} /> {t('patientDetails.downloadPdf')}
                     </button>
                   </div>
                   {px.instructions && (
@@ -522,7 +541,7 @@ const PatientDetails: React.FC = () => {
                 </div>
               ))
             ) : (
-              <p className="text-sm text-slate-400 p-4 bg-slate-50 rounded-lg border border-dashed border-slate-200">No prescriptions recorded.</p>
+              <p className="text-sm text-slate-400 p-4 bg-slate-50 rounded-lg border border-dashed border-slate-200">{t('patientDetails.noPrescriptions')}</p>
             )}
           </div>
         </div>
@@ -533,10 +552,10 @@ const PatientDetails: React.FC = () => {
       {activeTab === 'plans' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-black">Treatment Plans</h2>
+            <h2 className="text-xl font-bold text-black">{t('patientDetails.treatmentPlansTab')}</h2>
             {isDoctor && (
               <button onClick={() => setShowPlanModal(true)} className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-colors font-medium">
-                <Plus size={18} /> Create Plan
+                <Plus size={18} /> {t('patientDetails.createPlan')}
               </button>
             )}
           </div>
@@ -550,13 +569,13 @@ const PatientDetails: React.FC = () => {
                     <p className="text-sm text-slate-500">Created: {new Date(plan.created_at).toLocaleDateString()}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium text-slate-500">Estimated Cost</p>
+                    <p className="text-sm font-medium text-slate-500">{t('patientDetails.estimatedCost')}</p>
                     <p className="text-xl font-bold text-[#6899B0]">₹{plan.total_estimated_cost}</p>
                   </div>
                 </div>
                 
                 <div className="space-y-3 mt-6">
-                  <h4 className="font-semibold text-sm text-black uppercase tracking-wider">Stages / Visits</h4>
+                  <h4 className="font-semibold text-sm text-black uppercase tracking-wider">{t('patientDetails.stagesVisits')}</h4>
                   {plan.stages?.map((stage: any, idx: number) => (
                     <div key={stage.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
                       <div className="flex items-center gap-4">
@@ -679,6 +698,7 @@ const PatientDetails: React.FC = () => {
                       <div className="flex-1 space-y-3">
                         <input 
                           required 
+                          list="med-names"
                           type="text" 
                           placeholder="Medicine Name (e.g. Amoxicillin 500mg)"
                           className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-[oklch(0.78_0.03_206.04)]"
@@ -688,6 +708,7 @@ const PatientDetails: React.FC = () => {
                         <div className="grid grid-cols-3 gap-2">
                           <input 
                             required 
+                            list="med-dosages"
                             type="text" 
                             placeholder="Dosage (e.g. 1 Tablet)"
                             className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-[oklch(0.78_0.03_206.04)]"
@@ -696,6 +717,7 @@ const PatientDetails: React.FC = () => {
                           />
                           <input 
                             required 
+                            list="med-frequencies"
                             type="text" 
                             placeholder="Frequency (e.g. Twice a day)"
                             className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-[oklch(0.78_0.03_206.04)]"
@@ -704,6 +726,7 @@ const PatientDetails: React.FC = () => {
                           />
                           <input 
                             required 
+                            list="med-durations"
                             type="text" 
                             placeholder="Duration (e.g. 5 Days)"
                             className="w-full p-2 border border-slate-200 rounded text-sm outline-none focus:ring-1 focus:ring-purple-500"
@@ -748,7 +771,7 @@ const PatientDetails: React.FC = () => {
             <form onSubmit={handleAddPlan} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium mb-1">Plan Title</label>
-                <input required type="text" className="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" placeholder="e.g. Full Mouth Rehabilitation" value={planForm.title} onChange={e => setPlanForm({...planForm, title: e.target.value})} />
+                <input required list="plan-titles" type="text" className="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-[#6899B0] outline-none" placeholder="e.g. Full Mouth Rehabilitation" value={planForm.title} onChange={e => setPlanForm({...planForm, title: e.target.value})} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Total Estimated Cost (₹)</label>
@@ -767,7 +790,7 @@ const PatientDetails: React.FC = () => {
                   {planForm.stages.map((stage, index) => (
                     <div key={index} className="flex gap-2 items-start bg-slate-50 p-3 rounded-lg border border-slate-200">
                       <div className="flex-1 space-y-3">
-                        <input required type="text" placeholder="Stage Name (e.g. RCT Visit 1)" className="w-full p-2 border rounded text-sm outline-none" value={stage.stage_name} onChange={e => { const newStages = [...planForm.stages]; newStages[index].stage_name = e.target.value; setPlanForm({...planForm, stages: newStages}); }} />
+                        <input required list="plan-stages" type="text" placeholder="Stage Name (e.g. RCT Visit 1)" className="w-full p-2 border rounded text-sm outline-none" value={stage.stage_name} onChange={e => { const newStages = [...planForm.stages]; newStages[index].stage_name = e.target.value; setPlanForm({...planForm, stages: newStages}); }} />
                         <div className="flex gap-2">
                           <input required type="text" placeholder="Description" className="flex-1 p-2 border rounded text-sm outline-none" value={stage.description} onChange={e => { const newStages = [...planForm.stages]; newStages[index].description = e.target.value; setPlanForm({...planForm, stages: newStages}); }} />
                           <input required type="number" placeholder="Cost" className="w-24 p-2 border rounded text-sm outline-none" value={stage.estimated_cost} onChange={e => { const newStages = [...planForm.stages]; newStages[index].estimated_cost = Number(e.target.value); setPlanForm({...planForm, stages: newStages}); }} />
@@ -923,6 +946,110 @@ const PatientDetails: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Global Datalists for Autocomplete */}
+      <datalist id="dental-symptoms">
+        <option value="Toothache (Severe/Pulsating)" />
+        <option value="Sensitivity to Hot/Cold" />
+        <option value="Swelling in Gums/Face" />
+        <option value="Bleeding Gums" />
+        <option value="Bad Breath (Halitosis)" />
+        <option value="Pain while Chewing" />
+        <option value="Loose Tooth (Mobility)" />
+        <option value="Food Impaction" />
+        <option value="Broken/Chipped Tooth" />
+        <option value="Jaw Pain (TMJ)" />
+        <option value="Discolored Tooth" />
+      </datalist>
+
+      <datalist id="dental-diagnosis">
+        <option value="Dental Caries (Decay)" />
+        <option value="Irreversible Pulpitis" />
+        <option value="Reversible Pulpitis" />
+        <option value="Gingivitis" />
+        <option value="Periodontitis" />
+        <option value="Dental Abscess" />
+        <option value="Impacted Wisdom Tooth" />
+        <option value="Fractured Tooth" />
+        <option value="Calculus / Stains" />
+        <option value="Apical Periodontitis" />
+        <option value="Malocclusion" />
+        <option value="Attrition / Abrasion" />
+        <option value="Pulp Necrosis" />
+      </datalist>
+
+      <datalist id="med-names">
+        <option value="Amoxicillin 500mg" />
+        <option value="Amoxicillin 500mg + Clavulanic Acid 125mg (Augmentin 625)" />
+        <option value="Metronidazole 400mg" />
+        <option value="Ibuprofen 400mg" />
+        <option value="Paracetamol 500mg / 650mg" />
+        <option value="Ketorolac 10mg (Ketorol DT)" />
+        <option value="Aceclofenac 100mg + Paracetamol 325mg (Zerodol-P)" />
+        <option value="Chlorhexidine Mouthwash 0.2%" />
+        <option value="Pantoprazole 40mg" />
+        <option value="Omeprazole 20mg" />
+        <option value="Diclofenac 50mg" />
+        <option value="Cefpodoxime 200mg" />
+      </datalist>
+
+      <datalist id="med-dosages">
+        <option value="1 Tablet" />
+        <option value="1 Capsule" />
+        <option value="10 ml" />
+        <option value="5 ml" />
+        <option value="Apply Locally" />
+        <option value="Rinse and Spit" />
+        <option value="1/2 Tablet" />
+      </datalist>
+
+      <datalist id="med-frequencies">
+        <option value="Twice a Day (BD)" />
+        <option value="Thrice a Day (TDS)" />
+        <option value="Once a Day (OD)" />
+        <option value="As Needed (SOS) for Pain" />
+        <option value="Before Meals (AC)" />
+        <option value="After Meals (PC)" />
+        <option value="Every 8 Hours" />
+        <option value="Every 12 Hours" />
+      </datalist>
+
+      <datalist id="med-durations">
+        <option value="3 Days" />
+        <option value="5 Days" />
+        <option value="7 Days" />
+        <option value="10 Days" />
+        <option value="2 Weeks" />
+        <option value="1 Month" />
+        <option value="Continue" />
+      </datalist>
+
+      <datalist id="plan-titles">
+        <option value="Root Canal Treatment (RCT) & Crown" />
+        <option value="Full Mouth Rehabilitation" />
+        <option value="Orthodontic Treatment (Braces)" />
+        <option value="Dental Implants Placement" />
+        <option value="Smile Designing / Veneers" />
+        <option value="Periodontal Flap Surgery" />
+        <option value="Multiple Extractions & Dentures" />
+        <option value="Clear Aligners Treatment" />
+        <option value="Comprehensive Restorative Plan" />
+      </datalist>
+
+      <datalist id="plan-stages">
+        <option value="Consultation & Treatment Planning" />
+        <option value="RCT - Access Opening & BMP" />
+        <option value="RCT - Obturation" />
+        <option value="Crown Preparation & Impression" />
+        <option value="Crown Delivery / Cementation" />
+        <option value="Extraction & Suture Placement" />
+        <option value="Suture Removal" />
+        <option value="Scaling and Polishing" />
+        <option value="Restoration / Filling" />
+        <option value="Implant Placement Surgery" />
+        <option value="Implant Loading / Crown" />
+        <option value="Follow-up / Review" />
+      </datalist>
     </div>
   );
 };

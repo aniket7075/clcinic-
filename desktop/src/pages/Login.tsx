@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setCredentials, setLoading } from '../store/authSlice';
 import api, { setAuthToken } from '../api/axios';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 
 const Login: React.FC = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -29,7 +32,7 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setError(t('login.errorFields'));
       return;
     }
 
@@ -81,6 +84,10 @@ const Login: React.FC = () => {
         className={`flex items-center justify-between min-h-screen px-6 md:px-16 lg:px-32 xl:px-48 bg-cover bg-center bg-no-repeat relative before:absolute before:inset-0 before:bg-black/10 transition-opacity duration-1000 ${showSplash ? 'opacity-0' : 'opacity-100'}`}
         style={{ backgroundImage: 'url("/dental-new.jpg")' }}
       >
+        <div className="absolute top-6 right-6 z-50">
+          <LanguageSwitcher />
+        </div>
+        
         {/* Left Side Logo / Branding (Hidden on mobile to save space) */}
         <div className="hidden lg:flex flex-col items-start relative z-10 w-full max-w-lg pr-12">
           <div className="bg-white/40 backdrop-blur-md p-8 rounded-3xl shadow-2xl border border-white/30">
@@ -95,7 +102,7 @@ const Login: React.FC = () => {
                 <path d="M16 2c-2 0-3.5 1-4 2-.5-1-2-2-4-2-2.2 0-4 1.8-4 4v3c0 2 1 4 2.5 5.5L9.5 21c.5 1 1.5 1 2 0l1.5-3 1.5 3c.5 1 1.5 1 2 0l3-6.5C21 13 22 11 22 9V6c0-2.2-1.8-4-4-4zM9.5 16l-2-4.5c-1-1-2-2.5-2-4V6c0-1.1.9-2 2-2 1 0 2.5 1 3 2.5v2h-2v1.5h2v2H9.5zM17.5 11.5l-2 4.5H15v-2h2v-1.5h-2v-2c.5-1.5 2-2.5 3-2.5 1.1 0 2 .9 2 2v1.5c0 1.5-1 3-2 4.5z" />
               </svg>
             </div>
-            <p className="text-slate-800 text-lg font-bold tracking-wide">Desktop Portal</p>
+            <p className="text-slate-800 text-lg font-bold tracking-wide">{t('login.desktopPortal')}</p>
           </div>
 
           {error && (
@@ -106,7 +113,7 @@ const Login: React.FC = () => {
 
           <form onSubmit={handleLogin} className="space-y-5 animate-fade-in-delayed">
             <div>
-              <label className="block text-sm font-semibold text-black mb-1.5">Email Address</label>
+              <label className="block text-sm font-semibold text-black mb-1.5">{t('login.email')}</label>
               <input
                 type="email"
                 value={email}
@@ -117,7 +124,7 @@ const Login: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-black mb-1.5">Password</label>
+              <label className="block text-sm font-semibold text-black mb-1.5">{t('login.password')}</label>
               <input
                 type="password"
                 value={password}
@@ -135,7 +142,7 @@ const Login: React.FC = () => {
               {localLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               ) : (
-                'Sign In to Dashboard'
+                t('login.signIn')
               )}
             </button>
           </form>

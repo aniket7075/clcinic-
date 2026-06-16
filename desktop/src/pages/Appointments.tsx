@@ -6,6 +6,7 @@ import type { View } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { enUS } from 'date-fns/locale/en-US';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { useTranslation } from 'react-i18next';
 
 const locales = {
   'en-US': enUS,
@@ -20,6 +21,7 @@ const localizer = dateFnsLocalizer({
 });
 
 const Appointments: React.FC = () => {
+  const { t } = useTranslation();
   const [appointments, setAppointments] = useState<any[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -174,7 +176,7 @@ const Appointments: React.FC = () => {
     <div className="p-8 max-w-7xl mx-auto h-[calc(100vh-2rem)] flex flex-col">
       <div className="flex justify-between items-center mb-6 shrink-0">
         <h1 className="text-2xl font-bold text-black flex items-center gap-2">
-          <CalendarIcon className="text-[#6899B0]" /> Smart Scheduling
+          <CalendarIcon className="text-[#6899B0]" /> {t('appointments.title')}
         </h1>
         <button 
           onClick={() => {
@@ -184,12 +186,12 @@ const Appointments: React.FC = () => {
           className="flex items-center gap-2 px-4 py-2 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] transition-colors shadow-sm font-medium"
         >
           <Plus size={18} />
-          New Appointment
+          {t('appointments.newAppointment')}
         </button>
       </div>
 
       <div className="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 p-4 relative min-h-[600px]">
-        {loading && <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">Loading...</div>}
+        {loading && <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">{t('appointments.loading')}</div>}
         
         <Calendar
           localizer={localizer}
@@ -215,17 +217,17 @@ const Appointments: React.FC = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
-            <h2 className="text-xl font-bold mb-4 border-b border-slate-100 pb-2">Book Appointment</h2>
+            <h2 className="text-xl font-bold mb-4 border-b border-slate-100 pb-2">{t('appointments.bookAppointment')}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Patient</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">{t('appointments.patient')}</label>
                 <select 
                   required 
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none bg-slate-50"
                   value={formData.patient_id}
                   onChange={e => setFormData({...formData, patient_id: e.target.value})}
                 >
-                  <option value="">Select Patient...</option>
+                  <option value="">{t('appointments.selectPatient')}</option>
                   {patients.map(p => (
                     <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.mobile})</option>
                   ))}
@@ -233,14 +235,14 @@ const Appointments: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Doctor</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">{t('appointments.doctor')}</label>
                 <select 
                   required 
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none bg-slate-50"
                   value={formData.doctor_id}
                   onChange={e => setFormData({...formData, doctor_id: e.target.value})}
                 >
-                  <option value="">Select Doctor...</option>
+                  <option value="">{t('appointments.selectDoctor')}</option>
                   {doctors.map(d => (
                     <option key={d.profile_id} value={d.profile_id}>Dr. {d.profiles?.first_name} {d.profiles?.last_name}</option>
                   ))}
@@ -248,7 +250,7 @@ const Appointments: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Date</label>
+                <label className="block text-sm font-bold text-slate-700 mb-1">{t('appointments.date')}</label>
                 <input 
                   required 
                   type="date"
@@ -260,7 +262,7 @@ const Appointments: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1">Start Time</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">{t('appointments.startTime')}</label>
                   <input 
                     required 
                     type="time"
@@ -270,7 +272,7 @@ const Appointments: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-slate-700 mb-1">End Time</label>
+                  <label className="block text-sm font-bold text-slate-700 mb-1">{t('appointments.endTime')}</label>
                   <input 
                     required 
                     type="time"
@@ -282,25 +284,41 @@ const Appointments: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1">Reason / Notes</label>
-                <textarea 
+                <label className="block text-sm font-bold text-slate-700 mb-1">{t('appointments.reasonNotes')}</label>
+                <input 
+                  list="visit-reasons"
+                  type="text"
                   className="w-full border border-slate-200 p-2.5 rounded-lg focus:ring-2 focus:ring-[#6899B0] outline-none bg-slate-50"
-                  rows={2}
+                  placeholder={t('appointments.reasonPlaceholder')}
                   value={formData.notes}
                   onChange={e => setFormData({...formData, notes: e.target.value})}
-                ></textarea>
+                />
               </div>
 
               <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
-                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors">{t('appointments.cancel')}</button>
                 <button type="submit" disabled={submitting} className="px-6 py-2 bg-[#6899B0] text-white font-bold rounded-lg hover:bg-[#5D8799] disabled:opacity-50 transition-colors shadow-sm">
-                  {submitting ? 'Booking...' : 'Confirm Booking'}
+                  {submitting ? t('appointments.booking') : t('appointments.confirmBooking')}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
+
+      <datalist id="visit-reasons">
+        <option value="Toothache / Pain" />
+        <option value="Teeth Cleaning / Scaling" />
+        <option value="Routine Checkup / Consultation" />
+        <option value="Bleeding / Swollen Gums" />
+        <option value="Broken / Chipped Tooth" />
+        <option value="Cavity / Dental Filling" />
+        <option value="Root Canal Consultation" />
+        <option value="Braces / Aligners Consultation" />
+        <option value="Teeth Whitening" />
+        <option value="Wisdom Tooth Pain" />
+        <option value="Denture / Crown Fitting" />
+      </datalist>
     </div>
   );
 };
