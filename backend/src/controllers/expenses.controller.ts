@@ -19,7 +19,7 @@ export const getExpenses = async (req: AuthRequest, res: Response): Promise<void
 
 export const createExpense = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { category, amount, description, expense_date } = req.body;
+    const { category, amount, description, expense_date, recipient_name } = req.body;
     
     const { data, error } = await supabase
       .from('expenses')
@@ -28,6 +28,7 @@ export const createExpense = async (req: AuthRequest, res: Response): Promise<vo
         category,
         amount,
         description,
+        recipient_name,
         expense_date: expense_date || new Date().toISOString().split('T')[0],
         recorded_by: req.user.id
       })

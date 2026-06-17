@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { supabase } from '../config/supabase';
+import { DbService } from '../services/db.service';
 
 export const getAppointments = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -38,13 +39,7 @@ export const getAppointmentById = async (req: AuthRequest, res: Response): Promi
 export const createAppointment = async (req: AuthRequest, res: Response): Promise<void> => {
   const appointmentData = { ...req.body, clinic_id: req.user.clinic_id };
   try {
-    const { data, error } = await supabase
-      .from('appointments')
-      .insert([appointmentData])
-      .select()
-      .single();
-
-    if (error) throw error;
+    const data = await DbService.insert('appointments', appointmentData);
 
     // TODO: Trigger SMS/WhatsApp notification here
 
@@ -58,15 +53,7 @@ export const updateAppointment = async (req: AuthRequest, res: Response): Promis
   const { id } = req.params;
   const updateData = req.body;
   try {
-    const { data, error } = await supabase
-      .from('appointments')
-      .update(updateData)
-      .eq('id', id)
-      .eq('clinic_id', req.user.clinic_id)
-      .select()
-      .single();
-
-    if (error) throw error;
+    const data = await DbService.update('appointments', id, updateData);
 
     // TODO: Trigger SMS/WhatsApp notification if status changed to CANCELLED or RESCHEDULED
 

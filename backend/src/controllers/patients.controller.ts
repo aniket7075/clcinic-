@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { supabase } from '../config/supabase';
+import { DbService } from '../services/db.service';
 
 export const getPatients = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
@@ -45,13 +46,7 @@ export const createPatient = async (req: AuthRequest, res: Response): Promise<vo
   }
 
   try {
-    const { data, error } = await supabase
-      .from('patients')
-      .insert([patientData])
-      .select()
-      .single();
-
-    if (error) throw error;
+    const data = await DbService.insert('patients', patientData);
     res.status(201).json(data);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -70,15 +65,7 @@ export const updatePatient = async (req: AuthRequest, res: Response): Promise<vo
   }
 
   try {
-    const { data, error } = await supabase
-      .from('patients')
-      .update(updateData)
-      .eq('id', id)
-      .eq('clinic_id', req.user.clinic_id)
-      .select()
-      .single();
-
-    if (error) throw error;
+    const data = await DbService.update('patients', id, updateData);
     res.status(200).json(data);
   } catch (err: any) {
     res.status(500).json({ error: err.message });

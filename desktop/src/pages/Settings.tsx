@@ -19,6 +19,7 @@ const Settings: React.FC = () => {
     }
   });
 
+  const [clinicId, setClinicId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'profile' | 'templates' | 'subscription'>('profile');
   const [templates, setTemplates] = useState<any[]>([]);
 
@@ -55,6 +56,7 @@ const Settings: React.FC = () => {
           configData: { enableNotifications: true, enableWhatsappReminders: true, theme: 'light' }
         });
         
+        setClinicId(res.data.id || '');
         setActivePlan(res.data.subscription_plan || 'starter');
         if (res.data.subscription_expiry) {
           const date = new Date(res.data.subscription_expiry);
@@ -250,6 +252,30 @@ const Settings: React.FC = () => {
               className="w-full p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#6899B0] focus:border-blue-500 outline-none"
               placeholder="e.g. 12-3456789"
             />
+          </div>
+
+          <div className="pt-4 border-t border-slate-200 mt-4">
+            <h3 className="font-semibold text-black mb-4 flex items-center gap-2">Public Booking Portal</h3>
+            <p className="text-sm text-slate-600 mb-4">Share this link with your patients so they can book appointments online directly.</p>
+            
+            <div className="flex items-center gap-3">
+              <input 
+                type="text" 
+                readOnly
+                value={`${window.location.origin}/book/${clinicId}`}
+                className="flex-1 p-2.5 bg-slate-100 border border-slate-300 rounded-lg text-slate-600 font-medium outline-none"
+              />
+              <button 
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/book/${clinicId}`);
+                  alert('Booking Link Copied to Clipboard!');
+                }}
+                className="px-4 py-2.5 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-700 transition-colors shadow-sm whitespace-nowrap"
+              >
+                Copy Link
+              </button>
+            </div>
           </div>
 
           <div className="pt-4 border-t border-slate-200 mt-4">

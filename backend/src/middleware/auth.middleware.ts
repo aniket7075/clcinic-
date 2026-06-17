@@ -24,9 +24,25 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role, clinic_id')
+      .select('role, clinic_id, clinics(subscription_status, subscription_expiry)')
       .eq('id', data.user.id)
       .single();
+
+    // SaaS Subscription Check
+    if (profile?.role !== 'SUPER_ADMIN' && profile?.clinics) {
+      const clinic: any = Array.isArray(profile.clinics) ? profile.clinics[0] : profile.clinics;
+      if (clinic) {
+        const expiryDate = new Date(clinic.subscription_expiry);
+        if (clinic.subscription_status !== 'active' && clinic.subscription_status !== 'TRIAL') {
+           res.status(402).json({ error: 'Clinic subscription is not active' });
+           return;
+        }
+        if (expiryDate < new Date()) {
+           res.status(402).json({ error: 'Clinic subscription or trial has expired' });
+           return;
+        }
+      }
+    }
 
     req.user = {
       ...data.user,

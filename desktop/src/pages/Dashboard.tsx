@@ -9,6 +9,7 @@ import axios from '../api/axios';
 import ClinicSwitcher from '../components/ClinicSwitcher';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import { useFeatureAccess } from '../components/FeatureGate';
 
 interface DashboardStats {
   totalPatients: number;
@@ -54,6 +55,7 @@ const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [activePlan, setActivePlan] = useState<string>('starter');
     
+    const { hasAccess } = useFeatureAccess();
     const isAdmin = user?.role === 'SUPER_ADMIN' || user?.role === 'SUPERADMIN' || user?.role === 'ADMIN' || user?.role === 'admin' || user?.role === 'CLINIC_ADMIN';
     const isDoctor = user?.role === 'DOCTOR' || user?.role === 'doctor';
     const isReceptionist = user?.role === 'RECEPTIONIST' || user?.role === 'receptionist';
@@ -124,19 +126,19 @@ const Dashboard: React.FC = () => {
               <span>{t('sidebar.billing')}</span>
             </Link>
           )}
-          {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
-            <>
-              <Link to="/expenses" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/expenses') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
-                <Tag size={20} strokeWidth={location.pathname.startsWith('/expenses') ? 2.5 : 2} />
-                <span>{t('sidebar.expenses')}</span>
-              </Link>
-              <Link to="/inventory" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/inventory') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
-                <Package size={20} strokeWidth={location.pathname.startsWith('/inventory') ? 2.5 : 2} />
-                <span>{t('sidebar.inventory')}</span>
-              </Link>
-            </>
+          {isAdmin && hasAccess('EXPENSES', 'PRO') && (
+            <Link to="/expenses" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/expenses') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
+              <Tag size={20} strokeWidth={location.pathname.startsWith('/expenses') ? 2.5 : 2} />
+              <span>{t('sidebar.expenses')}</span>
+            </Link>
           )}
-          {(isAdmin || isDoctor) && (
+          {isAdmin && hasAccess('INVENTORY', 'PRO') && (
+            <Link to="/inventory" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/inventory') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
+              <Package size={20} strokeWidth={location.pathname.startsWith('/inventory') ? 2.5 : 2} />
+              <span>{t('sidebar.inventory')}</span>
+            </Link>
+          )}
+          {(isAdmin || isDoctor) && hasAccess('LAB_ORDERS', 'ENTERPRISE') && (
             <Link to="/lab-orders" className={`flex items-center space-x-3 px-4 py-2.5 rounded-2xl transition-all ${location.pathname.startsWith('/lab-orders') ? 'bg-white/20 text-white font-extrabold shadow-sm' : 'text-white font-bold hover:bg-white/10 hover:text-white  hover:translate-x-1'}`}>
               <Beaker size={20} strokeWidth={location.pathname.startsWith('/lab-orders') ? 2.5 : 2} />
               <span>{t('sidebar.labOrders')}</span>
@@ -156,7 +158,7 @@ const Dashboard: React.FC = () => {
             <Bell size={20} strokeWidth={location.pathname.startsWith('/notifications') ? 2.5 : 2} />
             <span>{t('sidebar.notifications')}</span>
           </Link>
-          {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
+          {isAdmin && hasAccess('STAFF', 'PRO') && (
             <>
               <div className="pt-4 pb-1.5 px-4">
                 <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest opacity-80">{t('sidebar.administration')}</p>
@@ -276,7 +278,7 @@ const Dashboard: React.FC = () => {
                       </div>
 
                       {/* Inventory and Staff Cards only for Pro/Enterprise */}
-                      {(activePlan === 'pro' || activePlan === 'enterprise') && (
+                      {hasAccess('INVENTORY', 'PRO') && (
                         <>
                           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                             <div className="flex justify-between items-start">
@@ -308,7 +310,7 @@ const Dashboard: React.FC = () => {
                 {/* Charts Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
                   {/* Revenue Trend Chart (Available for Admins on Pro/Enterprise) */}
-                  {isAdmin && (activePlan === 'pro' || activePlan === 'enterprise') && (
+                  {isAdmin && hasAccess('REVENUE_CHART', 'PRO') && (
                     <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 lg:col-span-2">
                       <div className="flex justify-between items-center mb-6">
                         <h3 className="text-lg font-bold text-black">{t('dashboard.revenueGrowth')}</h3>

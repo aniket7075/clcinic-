@@ -21,7 +21,9 @@ import ManageClinics from './pages/ManageClinics';
 import Expenses from './pages/Expenses';
 import PublicBooking from './pages/PublicBooking';
 import LandingPage from './pages/LandingPage';
+import ActivationScreen from './pages/ActivationScreen';
 import ProtectedRoute from './components/ProtectedRoute';
+import FeatureGate from './components/FeatureGate';
 
 // System Admin
 import SystemAdminLayout from './components/SystemAdminLayout';
@@ -42,6 +44,10 @@ const App: React.FC = () => {
           element={!isAuthenticated ? <LandingPage /> : <Navigate to="/" />} 
         />
         <Route 
+          path="/activate" 
+          element={!isAuthenticated ? <ActivationScreen /> : <Navigate to="/" />} 
+        />
+        <Route 
           path="/login" 
           element={!isAuthenticated ? <Login /> : <Navigate to="/" />} 
         />
@@ -55,10 +61,10 @@ const App: React.FC = () => {
         >
           {/* Admin & Superadmin only */}
           <Route path="manage-clinics" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN']}><ManageClinics /></ProtectedRoute>} />
-          <Route path="staff" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><StaffManagement /></ProtectedRoute>} />
-          <Route path="expenses" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><Expenses /></ProtectedRoute>} />
-          <Route path="inventory" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><Inventory /></ProtectedRoute>} />
-          <Route path="audit-logs" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><AuditLogs /></ProtectedRoute>} />
+          <Route path="staff" element={<FeatureGate minPlan="PRO" feature="STAFF"><ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><StaffManagement /></ProtectedRoute></FeatureGate>} />
+          <Route path="expenses" element={<FeatureGate minPlan="PRO" feature="EXPENSES"><ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><Expenses /></ProtectedRoute></FeatureGate>} />
+          <Route path="inventory" element={<FeatureGate minPlan="PRO" feature="INVENTORY"><ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><Inventory /></ProtectedRoute></FeatureGate>} />
+          <Route path="audit-logs" element={<FeatureGate minPlan="ENTERPRISE" feature="AUDIT_LOGS"><ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><AuditLogs /></ProtectedRoute></FeatureGate>} />
           <Route path="settings" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin']}><Settings /></ProtectedRoute>} />
           
           {/* Admin & Doctor */}
@@ -69,7 +75,7 @@ const App: React.FC = () => {
           <Route path="patients/:id" element={<PatientDetails />} />
           <Route path="appointments" element={<Appointments />} />
           <Route path="billing" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin', 'RECEPTIONIST', 'receptionist']}><Billing /></ProtectedRoute>} />
-          <Route path="lab-orders" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin', 'DOCTOR', 'doctor']}><LabOrders /></ProtectedRoute>} />
+          <Route path="lab-orders" element={<FeatureGate minPlan="ENTERPRISE" feature="LAB_ORDERS"><ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin', 'DOCTOR', 'doctor']}><LabOrders /></ProtectedRoute></FeatureGate>} />
           <Route path="schedule" element={<ProtectedRoute allowedRoles={['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'CLINIC_ADMIN', 'admin', 'DOCTOR', 'doctor']}><MySchedule /></ProtectedRoute>} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="support" element={<HelpSupport />} />

@@ -146,6 +146,21 @@ const Login: React.FC = () => {
               )}
             </button>
           </form>
+          
+          <div className="mt-6 text-center animate-fade-in-delayed">
+            <p className="text-slate-600 text-sm">
+              Have an activation key?{' '}
+              <a href="/activate" className="text-blue-600 font-bold hover:underline">
+                Activate Product
+              </a>
+            </p>
+            <p className="text-slate-600 text-sm mt-2">
+              Don't have an account?{' '}
+              <a href="/welcome" className="text-blue-600 font-bold hover:underline">
+                Sign up
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </>

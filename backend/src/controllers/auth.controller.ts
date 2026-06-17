@@ -33,15 +33,31 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // Fetch associated clinic to get subscription details
+    let clinicInfo = null;
+    if (profile.clinic_id) {
+      const { data: clinicData } = await supabase
+        .from('clinics')
+        .select('id, name, subscription_plan, subscription_status, custom_features')
+        .eq('id', profile.clinic_id)
+        .single();
+      
+      if (clinicData) {
+        clinicInfo = clinicData;
+      }
+    }
+
     res.status(200).json({
       message: 'Login successful',
       token: data.session.access_token,
       user: {
-        id: data.user.id,
-        email: data.user.email,
+        id: profile.id,
+        email: profile.email,
         role: profile.role,
         firstName: profile.first_name,
         lastName: profile.last_name,
+        clinicId: profile.clinic_id,
+        clinic: clinicInfo
       },
     });
   } catch (err) {

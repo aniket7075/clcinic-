@@ -91,6 +91,34 @@ const Reports: React.FC = () => {
     }));
   };
 
+  const getExpenseBreakdownData = () => {
+    if (!expensesData || !Array.isArray(expensesData)) return [];
+
+    const grouped = expensesData.reduce((acc: any, curr: any) => {
+      const cat = curr.category || 'OTHER';
+      acc[cat] = (acc[cat] || 0) + Number(curr.amount);
+      return acc;
+    }, {});
+
+    const colors: any = {
+      'SALARY': '#6366f1',
+      'LAB_WORK': '#06b6d4',
+      'EXTERNAL_DOCTOR': '#8b5cf6',
+      'RENT': '#3b82f6',
+      'EQUIPMENT': '#f59e0b',
+      'MARKETING': '#ec4899',
+      'DAILY_EXPENSES': '#10b981',
+      'UTILITIES': '#64748b',
+      'OTHER': '#94a3b8'
+    };
+
+    return Object.keys(grouped).map(cat => ({
+      name: cat.replace('_', ' '),
+      value: grouped[cat],
+      color: colors[cat] || '#94a3b8'
+    })).sort((a, b) => b.value - a.value);
+  };
+
   const getAppointmentsChartData = () => {
     if (!reportData || !Array.isArray(reportData)) return [];
     
@@ -183,6 +211,7 @@ const Reports: React.FC = () => {
               <p className="text-slate-500 font-medium">No data available for the selected range.</p>
             </div>
           ) : activeTab === 'financial' ? (
+          <>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <h2 className="text-lg font-bold text-black mb-6">Revenue & Expenses Trend</h2>
@@ -234,6 +263,69 @@ const Reports: React.FC = () => {
                 </div>
               </div>
             </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h2 className="text-lg font-bold text-black mb-6">Expense Breakdown</h2>
+                <div className="h-72">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={getExpenseBreakdownData()}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={80}
+                        outerRadius={110}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {getExpenseBreakdownData().map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip 
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        formatter={(value: any) => `₹${Number(value).toLocaleString()}`}
+                      />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                 <h2 className="text-lg font-bold text-black mb-6">Category Summary</h2>
+                 <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
+                        <th className="pb-3 px-4 font-bold">Category</th>
+                        <th className="pb-3 px-4 font-bold text-right">Total Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getExpenseBreakdownData().map((row: any, i: number) => (
+                        <tr key={i} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                          <td className="py-4 px-4 text-sm font-bold flex items-center gap-3">
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: row.color }}></div>
+                            {row.name}
+                          </td>
+                          <td className="py-4 px-4 text-right font-black text-slate-800">
+                            ₹{row.value.toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                      {getExpenseBreakdownData().length === 0 && (
+                        <tr>
+                          <td colSpan={2} className="py-8 text-center text-slate-500">No expenses recorded for this period.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </>
           ) : activeTab === 'appointments' ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">

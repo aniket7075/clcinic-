@@ -20,7 +20,9 @@ const ManageClinics: React.FC = () => {
     contact_email: '',
     contact_mobile: '',
     gst_number: '',
-    is_active: true
+    is_active: true,
+    subscription_status: 'TRIAL',
+    subscription_expiry: ''
   });
 
   useEffect(() => {
@@ -53,7 +55,9 @@ const ManageClinics: React.FC = () => {
         contact_email: clinic.contact_email || '',
         contact_mobile: clinic.contact_mobile || '',
         gst_number: clinic.gst_number || '',
-        is_active: clinic.is_active
+        is_active: clinic.is_active,
+        subscription_status: clinic.subscription_status || 'TRIAL',
+        subscription_expiry: clinic.subscription_expiry || ''
       });
     } else {
       setEditingClinic(null);
@@ -63,7 +67,9 @@ const ManageClinics: React.FC = () => {
         contact_email: '',
         contact_mobile: '',
         gst_number: '',
-        is_active: true
+        is_active: true,
+        subscription_status: 'TRIAL',
+        subscription_expiry: ''
       });
     }
     setError(null);
@@ -167,9 +173,14 @@ const ManageClinics: React.FC = () => {
                     {!clinic.contact_email && !clinic.contact_mobile && '-'}
                   </td>
                   <td className="p-5">
-                    <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${clinic.is_active ? 'bg-[#B8D4E3]/40 text-[#6899B0] border border-[#B8D4E3]' : 'bg-slate-100 text-black border border-slate-200'}`}>
-                      {clinic.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                    <div className="flex flex-col gap-2">
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider w-fit ${clinic.is_active ? 'bg-[#B8D4E3]/40 text-[#6899B0] border border-[#B8D4E3]' : 'bg-slate-100 text-black border border-slate-200'}`}>
+                        {clinic.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider w-fit ${clinic.subscription_status === 'active' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : clinic.subscription_status === 'TRIAL' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-red-100 text-red-700 border border-red-200'}`}>
+                        {clinic.subscription_status || 'TRIAL'}
+                      </span>
+                    </div>
                   </td>
                   <td className="p-5 text-right">
                     <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -283,6 +294,34 @@ const ManageClinics: React.FC = () => {
                     placeholder="Enter GST number"
                   />
                 </div>
+
+                {editingClinic && (
+                  <>
+                    <div className="grid grid-cols-2 gap-5 pt-4 border-t border-[#E0EEF5]">
+                      <div>
+                        <label className="block text-sm font-bold text-[#6899B0] mb-1.5">Subscription Status</label>
+                        <select
+                          value={formData.subscription_status}
+                          onChange={(e) => setFormData({...formData, subscription_status: e.target.value})}
+                          className="w-full px-4 py-3 bg-[#E0EEF5]/20 border border-[#B8D4E3] rounded-xl focus:bg-white focus:ring-2 focus:ring-[#6899B0] focus:border-[#6899B0] transition-all font-medium text-[#6899B0]"
+                        >
+                          <option value="TRIAL">Trial</option>
+                          <option value="active">Active</option>
+                          <option value="expired">Expired</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-[#6899B0] mb-1.5">Expiry Date</label>
+                        <input
+                          type="date"
+                          value={formData.subscription_expiry ? new Date(formData.subscription_expiry).toISOString().split('T')[0] : ''}
+                          onChange={(e) => setFormData({...formData, subscription_expiry: e.target.value})}
+                          className="w-full px-4 py-3 bg-[#E0EEF5]/20 border border-[#B8D4E3] rounded-xl focus:bg-white focus:ring-2 focus:ring-[#6899B0] focus:border-[#6899B0] transition-all font-medium text-[#6899B0]"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 {editingClinic && (
                   <div className="flex items-center gap-2 mt-2">

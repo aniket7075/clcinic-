@@ -1,23 +1,30 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   Activity, Shield, Clock, Users, Database, 
   BarChart, ArrowRight, CheckCircle2,
   ChevronRight, Sparkles, Plus, X
 } from 'lucide-react';
 
-import { CreditCard } from 'lucide-react';
+
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import api from '../api/axios';
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'half-yearly' | 'yearly'>('monthly');
   const [selectedPlanToUpgrade, setSelectedPlanToUpgrade] = useState<'starter' | 'pro' | 'enterprise'>('pro');
   const [processingPayment, setProcessingPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  const [registerData, setRegisterData] = useState({
+    clinic_name: '',
+    owner_name: '',
+    email: '',
+    phone: ''
+  });
 
   const handleBuyPlan = (plan: 'starter' | 'pro' | 'enterprise') => {
     setSelectedPlanToUpgrade(plan);
@@ -28,11 +35,23 @@ const LandingPage: React.FC = () => {
   const processPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setProcessingPayment(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setPaymentSuccess(true);
-    setTimeout(() => {
-      navigate('/login');
-    }, 2000);
+    try {
+      await api.post('/public/register-clinic', {
+        ...registerData,
+        plan: selectedPlanToUpgrade,
+        billing_cycle: billingCycle
+      });
+      setPaymentSuccess(true);
+      setTimeout(() => {
+        setIsPaymentModalOpen(false);
+        alert('Request Submitted! You will receive an email with your Activation Key once approved.');
+      }, 3000);
+    } catch (err: any) {
+      console.error(err);
+      alert(err.response?.data?.error || 'Registration failed');
+    } finally {
+      setProcessingPayment(false);
+    }
   };
 
   const getPrice = (plan: 'starter' | 'pro' | 'enterprise', cycle: 'monthly' | 'half-yearly' | 'yearly') => {
@@ -328,29 +347,15 @@ const LandingPage: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={processPayment} className="p-0 flex-1 flex flex-col min-h-[400px]">
-                <div className="bg-[#F4F8FB] p-3 text-xs text-center border-b border-slate-200 text-slate-500">
-                   English | ₹ INR
+                <div className="bg-[#F4F8FB] p-3 text-xs text-center border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+                   Step 1: Create Account
                 </div>
                 
                 <div className="p-5 flex-1 space-y-4">
-                  <div className="text-sm font-medium text-slate-800 mb-2">Contact Details</div>
-                  <input type="text" placeholder="Phone Number" className="w-full p-3 border-b border-slate-300 text-sm outline-none focus:border-blue-500 transition-colors" required />
-                  <input type="email" placeholder="Email Address" className="w-full p-3 border-b border-slate-300 text-sm outline-none focus:border-blue-500 transition-colors" required />
-                  
-                  <div className="text-sm font-medium text-slate-800 mt-6 mb-2">Cards, UPI & More</div>
-                  <div className="border border-slate-200 rounded-lg overflow-hidden">
-                     <div className="flex items-center gap-3 p-3 border-b border-slate-200 bg-blue-50/50 cursor-pointer">
-                        <CreditCard size={18} className="text-blue-600" />
-                        <span className="text-sm font-medium text-slate-700">Card</span>
-                     </div>
-                     <div className="p-4 space-y-3 bg-white">
-                        <input type="text" placeholder="Card Number" className="w-full p-2.5 border border-slate-300 rounded text-sm outline-none focus:border-blue-500" required />
-                        <div className="grid grid-cols-2 gap-3">
-                          <input type="text" placeholder="Expiry (MM/YY)" className="w-full p-2.5 border border-slate-300 rounded text-sm outline-none focus:border-blue-500" required />
-                          <input type="text" placeholder="CVV" className="w-full p-2.5 border border-slate-300 rounded text-sm outline-none focus:border-blue-500" required />
-                        </div>
-                     </div>
-                  </div>
+                  <input type="text" placeholder="Clinic / Hospital Name" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.clinic_name} onChange={e => setRegisterData({...registerData, clinic_name: e.target.value})} />
+                  <input type="text" placeholder="Admin Full Name" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.owner_name} onChange={e => setRegisterData({...registerData, owner_name: e.target.value})} />
+                  <input type="text" placeholder="Phone Number" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.phone} onChange={e => setRegisterData({...registerData, phone: e.target.value})} />
+                  <input type="email" placeholder="Email Address (Login ID)" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.email} onChange={e => setRegisterData({...registerData, email: e.target.value})} />
                 </div>
 
                 {/* Razorpay Footer */}
@@ -366,7 +371,7 @@ const LandingPage: React.FC = () => {
                         Processing...
                       </>
                     ) : (
-                      `Pay ₹${getPrice(selectedPlanToUpgrade, billingCycle)}`
+                      `Register & Pay ₹${getPrice(selectedPlanToUpgrade, billingCycle)}`
                     )}
                   </button>
                   <div className="flex justify-between items-center mt-3 px-1">

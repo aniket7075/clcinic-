@@ -41,6 +41,9 @@ const Appointments: React.FC = () => {
     notes: ''
   });
 
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [showEventModal, setShowEventModal] = useState(false);
+
   const fetchAppointments = async () => {
     setLoading(true);
     try {
@@ -163,12 +166,15 @@ const Appointments: React.FC = () => {
   };
 
   const handleSelectEvent = (event: any) => {
-    // We could open a detail modal here. For now, prompt for status update if scheduled.
-    if (event.resource.status === 'SCHEDULED') {
-      const action = prompt('Enter action: 1 to Complete, 2 to Cancel, 3 for WhatsApp Reminder');
-      if (action === '1') updateStatus(event.resource.id, 'COMPLETED');
-      if (action === '2') updateStatus(event.resource.id, 'CANCELLED');
-      if (action === '3') sendWhatsAppReminder(event.resource);
+    setSelectedEvent(event.resource);
+    setShowEventModal(true);
+  };
+
+  const handleUpdateStatus = async (status: string) => {
+    if (selectedEvent) {
+      await updateStatus(selectedEvent.id, status);
+      setShowEventModal(false);
+      setSelectedEvent(null);
     }
   };
 
@@ -302,6 +308,101 @@ const Appointments: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Event Detail Modal */}
+      {showEventModal && selectedEvent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-slate-900">{t('appointments.details', 'Appointment Details')}</h2>
+              <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                selectedEvent.status === 'SCHEDULED' ? 'bg-blue-100 text-blue-700' :
+                selectedEvent.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
+                selectedEvent.status === 'CANCELLED' ? 'bg-red-100 text-red-700' :
+                'bg-orange-100 text-orange-700'
+              }`}>
+                {selectedEvent.status}
+              </span>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <p className="text-sm text-slate-500 font-medium">Patient Name</p>
+                <p className="text-lg font-bold text-slate-900">
+                  {selectedEvent.patients?.first_name} {selectedEvent.patients?.last_name}
+                </p>
+                <p className="text-sm text-slate-600">{selectedEvent.patients?.mobile}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-slate-500 font-medium">Doctor</p>
+                  <p className="text-md font-semibold text-slate-800">
+                    Dr. {selectedEvent.profiles?.last_name}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-500 font-medium">Date & Time</p>
+                  <p className="text-md font-semibold text-slate-800">
+                    {new Date(selectedEvent.appointment_date).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-slate-600">
+                    {selectedEvent.start_time.substring(0, 5)} - {selectedEvent.end_time.substring(0, 5)}
+                  </p>
+                </div>
+              </div>
+
+              {selectedEvent.notes && (
+                <div>
+                  <p className="text-sm text-slate-500 font-medium">Reason / Notes</p>
+                  <p className="text-sm text-slate-800 bg-slate-50 p-2 rounded border border-slate-100">
+                    {selectedEvent.notes}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-slate-50 p-6 flex flex-col gap-3 border-t border-slate-100">
+              <button 
+                onClick={() => sendWhatsAppReminder(selectedEvent)}
+                className="w-full py-2.5 bg-[#25D366] text-white font-bold rounded-lg hover:bg-[#128C7E] transition-colors shadow-sm flex justify-center items-center gap-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                </svg>
+                Send WhatsApp Reminder
+              </button>
+              
+              {selectedEvent.status === 'SCHEDULED' && (
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => handleUpdateStatus('COMPLETED')}
+                    className="flex-1 py-2 bg-slate-800 text-white font-semibold rounded-lg hover:bg-slate-700 transition-colors"
+                  >
+                    Mark Completed
+                  </button>
+                  <button 
+                    onClick={() => handleUpdateStatus('CANCELLED')}
+                    className="flex-1 py-2 bg-white text-red-600 border border-red-200 font-semibold rounded-lg hover:bg-red-50 transition-colors"
+                  >
+                    Cancel Appt
+                  </button>
+                </div>
+              )}
+              
+              <button 
+                onClick={() => {
+                  setShowEventModal(false);
+                  setSelectedEvent(null);
+                }}
+                className="w-full mt-2 py-2 text-slate-500 font-medium hover:text-slate-800 transition-colors"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

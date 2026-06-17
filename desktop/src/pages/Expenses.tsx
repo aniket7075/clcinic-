@@ -14,6 +14,7 @@ const Expenses: React.FC = () => {
     category: 'SALARY',
     amount: '',
     description: '',
+    recipient_name: '',
     expense_date: new Date().toISOString().split('T')[0]
   });
 
@@ -39,7 +40,7 @@ const Expenses: React.FC = () => {
     try {
       await api.post('/expenses', formData);
       setShowModal(false);
-      setFormData({ category: 'SALARY', amount: '', description: '', expense_date: new Date().toISOString().split('T')[0] });
+      setFormData({ category: 'SALARY', amount: '', description: '', recipient_name: '', expense_date: new Date().toISOString().split('T')[0] });
       fetchExpenses();
     } catch (err) {
       console.error('Error adding expense:', err);
@@ -60,7 +61,7 @@ const Expenses: React.FC = () => {
     }
   };
 
-  const categories = ['SALARY', 'EQUIPMENT', 'RENT', 'MARKETING', 'UTILITIES', 'OTHER'];
+  const categories = ['SALARY', 'EQUIPMENT', 'RENT', 'MARKETING', 'UTILITIES', 'EXTERNAL_DOCTOR', 'LAB_WORK', 'DAILY_EXPENSES', 'OTHER'];
 
   return (
     <div className="p-8 max-w-7xl mx-auto relative">
@@ -91,6 +92,7 @@ const Expenses: React.FC = () => {
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider">
                 <th className="p-4 font-bold">{t('expenses.date')}</th>
                 <th className="p-4 font-bold">{t('expenses.category')}</th>
+                <th className="p-4 font-bold">Recipient / Vendor</th>
                 <th className="p-4 font-bold">{t('expenses.description')}</th>
                 <th className="p-4 font-bold">{t('expenses.amount')}</th>
                 <th className="p-4 font-bold text-right">{t('expenses.actions')}</th>
@@ -108,10 +110,16 @@ const Expenses: React.FC = () => {
                       expense.category === 'SALARY' ? 'bg-indigo-50 text-indigo-700 border-indigo-200' :
                       expense.category === 'EQUIPMENT' ? 'bg-orange-50 text-orange-700 border-orange-200' :
                       expense.category === 'RENT' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                      expense.category === 'EXTERNAL_DOCTOR' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                      expense.category === 'LAB_WORK' ? 'bg-cyan-50 text-cyan-700 border-cyan-200' :
+                      expense.category === 'DAILY_EXPENSES' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
                       'bg-slate-50 text-slate-700 border-slate-200'
                     }`}>
-                      {expense.category}
+                      {expense.category.replace('_', ' ')}
                     </span>
+                  </td>
+                  <td className="p-4 font-medium text-slate-800">
+                    {expense.recipient_name || '-'}
                   </td>
                   <td className="p-4 text-slate-600 truncate max-w-[200px]" title={expense.description}>
                     {expense.description || '-'}
@@ -185,6 +193,17 @@ const Expenses: React.FC = () => {
                     className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none font-medium text-slate-900 bg-white transition-all"
                     value={formData.expense_date}
                     onChange={e => setFormData({...formData, expense_date: e.target.value})}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">Paid To (Recipient / Vendor)</label>
+                  <input 
+                    type="text"
+                    placeholder="e.g., Dr. Ramesh, City Lab, etc."
+                    className="w-full border border-slate-300 p-2.5 rounded-lg focus:ring-4 focus:ring-[#6899B0]/20 focus:border-[#6899B0] outline-none font-medium text-slate-900 bg-white transition-all"
+                    value={formData.recipient_name}
+                    onChange={e => setFormData({...formData, recipient_name: e.target.value})}
                   />
                 </div>
 
