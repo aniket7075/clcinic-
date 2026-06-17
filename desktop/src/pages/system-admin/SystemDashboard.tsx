@@ -38,7 +38,7 @@ const SystemDashboard: React.FC = () => {
         // Month array for chart (last 6 months)
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         const currentMonth = new Date().getMonth();
-        const chartData = [];
+        const chartData: { name: string; monthIndex: number; revenue: number }[] = [];
         for (let i = 5; i >= 0; i--) {
           let mIndex = currentMonth - i;
           if (mIndex < 0) mIndex += 12;

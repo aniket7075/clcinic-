@@ -100,7 +100,7 @@ const Dashboard: React.FC = () => {
           <div className="p-6">
             <div className="flex flex-col gap-3 mb-6 relative z-10">
               <div className="w-48 h-auto mb-2 flex items-center shrink-0">
-                <img src="/logo-white.png" alt="Q DENT Logo" className="w-full object-contain drop-shadow-md" />
+                <img src={user?.clinic?.logo_url || "/logo-white.png"} alt="Clinic Logo" className="max-w-full max-h-[60px] object-contain drop-shadow-md" />
               </div>
               <h2 className="text-[15px] font-extrabold text-white tracking-wide leading-tight line-clamp-2">{clinicName}</h2>
             </div>

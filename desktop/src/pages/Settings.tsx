@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { Save, Building, Phone, Mail, MapPin, MessageSquare, List, CreditCard, CheckCircle2 } from 'lucide-react';
+import { Save, Building, Phone, Mail, MapPin, MessageSquare, List, CreditCard, CheckCircle2, Upload, Image as ImageIcon } from 'lucide-react';
 
 const Settings: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -12,6 +12,7 @@ const Settings: React.FC = () => {
     phone: '',
     email: '',
     taxId: '',
+    logoUrl: '',
     configData: {
       enableNotifications: true,
       enableWhatsappReminders: true,
@@ -53,6 +54,7 @@ const Settings: React.FC = () => {
           phone: res.data.contact_mobile || '',
           email: res.data.contact_email || '',
           taxId: res.data.gst_number || '',
+          logoUrl: res.data.logo_url || '',
           configData: { enableNotifications: true, enableWhatsappReminders: true, theme: 'light' }
         });
         
@@ -102,7 +104,8 @@ const Settings: React.FC = () => {
         address: formData.address,
         contact_mobile: formData.phone,
         contact_email: formData.email,
-        gst_number: formData.taxId
+        gst_number: formData.taxId,
+        logo_url: formData.logoUrl
       });
       alert('Settings saved successfully!');
     } catch (err) {
@@ -149,6 +152,21 @@ const Settings: React.FC = () => {
     }
   };
 
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 1024 * 1024) { // 1MB limit
+        alert("Logo image is too large. Please upload an image under 1MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, logoUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   if (loading) {
     return <div className="p-8 text-black">Loading settings...</div>;
   }
@@ -192,6 +210,42 @@ const Settings: React.FC = () => {
             </div>
 
         <form onSubmit={handleSave} className="p-6 space-y-6">
+          {/* Logo Upload Section */}
+          <div className="flex items-start gap-6 border-b border-slate-100 pb-6">
+            <div className="w-24 h-24 rounded-xl bg-slate-100 flex flex-col items-center justify-center border border-slate-200 overflow-hidden relative group">
+              {formData.logoUrl ? (
+                <img src={formData.logoUrl} alt="Clinic Logo" className="w-full h-full object-contain" />
+              ) : (
+                <ImageIcon size={32} className="text-slate-400 mb-1" />
+              )}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                <Upload size={20} className="text-white" />
+              </div>
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleLogoUpload}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+              />
+            </div>
+            <div>
+              <h3 className="font-bold text-black mb-1">Clinic Logo</h3>
+              <p className="text-sm text-slate-500 mb-3">Upload your clinic's logo to display on the dashboard.</p>
+              <button 
+                type="button" 
+                className="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition text-sm relative"
+              >
+                Choose Image
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleLogoUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                />
+              </button>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-black mb-1">Clinic Name</label>
             <input 

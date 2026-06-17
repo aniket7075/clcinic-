@@ -38,7 +38,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     if (profile.clinic_id) {
       const { data: clinicData } = await supabase
         .from('clinics')
-        .select('id, name, subscription_plan, subscription_status, custom_features')
+        .select('id, name, subscription_plan, subscription_status, custom_features, logo_url')
         .eq('id', profile.clinic_id)
         .single();
       
