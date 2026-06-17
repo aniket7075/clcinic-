@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Activity, Shield, Clock, Users, Database,
   BarChart, ArrowRight, CheckCircle2,
-  ChevronRight, Sparkles, Plus, X
+  ChevronRight, Sparkles, Plus, X, Download
 } from 'lucide-react';
 
 
@@ -76,7 +76,10 @@ const LandingPage: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <LanguageSwitcher />
-            <Link to="/login" className="hidden md:block font-bold text-slate-600 hover:text-[#6899B0] transition-colors">
+            <a href="/Q_Dent_Setup.exe" className="hidden md:flex items-center gap-2 font-bold text-slate-600 hover:text-blue-600 transition-colors" download>
+              <Download size={18} /> {t('landing.nav.download', 'Download App')}
+            </a>
+            <Link to="/login" className="hidden md:block font-bold text-slate-600 hover:text-[#6899B0] transition-colors ml-2 border-l pl-4 border-slate-200">
               {t('landing.nav.logIn')}
             </Link>
             <Link to="/login" className="bg-[#6899B0] text-white px-6 py-2.5 rounded-full font-bold hover:bg-[#5D8799] transition-all shadow-md shadow-[#6899B0]/20 flex items-center gap-2">
@@ -295,6 +298,12 @@ const LandingPage: React.FC = () => {
           <button onClick={() => handleBuyPlan('starter')} className="inline-flex items-center gap-2 bg-white text-[#6899B0] px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-50 hover:scale-105 transition-all shadow-xl shadow-white/10">
             {t('landing.cta.btn')} <ChevronRight size={20} />
           </button>
+          
+          <div className="mt-8">
+             <a href="/Q_Dent_Setup.exe" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors border-b border-white/30 hover:border-white pb-1 font-medium" download>
+                <Download size={18} /> Download Desktop App (.exe)
+             </a>
+          </div>
         </div>
       </section>
 

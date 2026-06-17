@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Settings, X, RefreshCw } from 'lucide-react';
+import { Building2, Settings, X, RefreshCw, Trash2, Edit, Plus } from 'lucide-react';
 import api from '../../api/axios';
 
 interface Clinic {
@@ -34,6 +34,11 @@ const AllClinics: React.FC = () => {
   const [renewingClinic, setRenewingClinic] = useState<Clinic | null>(null);
   const [renewalData, setRenewalData] = useState({ plan: 'PRO', duration_days: 30 });
   const [saving, setSaving] = useState(false);
+
+  // Edit / Add States
+  const [editingClinic, setEditingClinic] = useState<Clinic | null>(null);
+  const [addingClinic, setAddingClinic] = useState(false);
+  const [formData, setFormData] = useState({ name: '', contact_email: '', contact_mobile: '', plan: 'PRO' });
 
   const fetchClinics = async () => {
     try {
@@ -100,6 +105,63 @@ const AllClinics: React.FC = () => {
     }
   };
 
+  const handleDelete = async (clinic: Clinic) => {
+    if (window.confirm(`Are you sure you want to completely remove ${clinic.name}? This action cannot be undone.`)) {
+      try {
+        await api.delete(`/clinics/${clinic.id}`);
+        fetchClinics();
+        alert('Clinic successfully removed.');
+      } catch (err: any) {
+        console.error(err);
+        alert('Failed to delete clinic.');
+      }
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingClinic) return;
+    setSaving(true);
+    try {
+      await api.put(`/clinics/${editingClinic.id}`, {
+        name: formData.name,
+        contact_email: formData.contact_email,
+        contact_mobile: formData.contact_mobile
+      });
+      setEditingClinic(null);
+      fetchClinics();
+      alert('Clinic details updated!');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update clinic');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      // Create a direct request, so the admin can just go to Requests and approve it
+      await api.post('/public/register-clinic', {
+        clinic_name: formData.name,
+        owner_name: 'Admin Added',
+        email: formData.contact_email,
+        phone: formData.contact_mobile,
+        plan: formData.plan,
+        billing_cycle: 'monthly'
+      });
+      setAddingClinic(false);
+      alert('Clinic added to Requests! Please go to the "Requests" tab to approve it and send the activation key.');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to add clinic request');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <>
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -108,6 +170,12 @@ const AllClinics: React.FC = () => {
             <h2 className="text-lg font-bold text-slate-900">Active Clinics</h2>
             <p className="text-sm text-slate-500">Manage all approved clinics and their subscription statuses.</p>
           </div>
+          <button 
+            onClick={() => { setAddingClinic(true); setFormData({ name: '', contact_email: '', contact_mobile: '', plan: 'PRO' }); }}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors shadow-sm shadow-blue-600/20"
+          >
+            <Plus size={16} /> Add Clinic Manually
+          </button>
         </div>
         
         <div className="overflow-x-auto">
@@ -159,7 +227,7 @@ const AllClinics: React.FC = () => {
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="flex gap-2">
+                      <div className="flex gap-1.5 flex-wrap w-max">
                         <button 
                           onClick={() => { setRenewingClinic(clinic); setRenewalData({ plan: clinic.subscription_plan, duration_days: 30 }); }}
                           className="p-1.5 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded transition-colors" 
@@ -173,6 +241,20 @@ const AllClinics: React.FC = () => {
                           title="Manage Features"
                         >
                           <Settings size={18} />
+                        </button>
+                        <button 
+                          onClick={() => { setEditingClinic(clinic); setFormData({ name: clinic.name, contact_email: clinic.contact_email, contact_mobile: clinic.contact_mobile, plan: clinic.subscription_plan }); }}
+                          className="p-1.5 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded transition-colors" 
+                          title="Edit Clinic"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(clinic)}
+                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" 
+                          title="Remove Clinic"
+                        >
+                          <Trash2 size={18} />
                         </button>
                       </div>
                     </td>
@@ -290,6 +372,85 @@ const AllClinics: React.FC = () => {
                 {saving ? 'Saving...' : 'Renew'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit / Add Clinic Modal */}
+      {(editingClinic || addingClinic) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-fade-in-up">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h2 className="text-xl font-bold text-slate-800">{editingClinic ? 'Edit Clinic Details' : 'Manually Add Clinic'}</h2>
+              <button onClick={() => { setEditingClinic(null); setAddingClinic(false); }} className="text-slate-400 hover:text-slate-600">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <form onSubmit={editingClinic ? handleEditSubmit : handleAddSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Clinic Name</label>
+                <input 
+                  type="text" 
+                  value={formData.name}
+                  onChange={e => setFormData({...formData, name: e.target.value})}
+                  className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Email Address</label>
+                <input 
+                  type="email" 
+                  value={formData.contact_email}
+                  onChange={e => setFormData({...formData, contact_email: e.target.value})}
+                  className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
+                <input 
+                  type="text" 
+                  value={formData.contact_mobile}
+                  onChange={e => setFormData({...formData, contact_mobile: e.target.value})}
+                  className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              {addingClinic && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">Assign Plan</label>
+                  <select 
+                    value={formData.plan}
+                    onChange={e => setFormData({...formData, plan: e.target.value})}
+                    className="w-full p-3 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 bg-white"
+                  >
+                    <option value="STARTER">Starter</option>
+                    <option value="PRO">Pro</option>
+                    <option value="ENTERPRISE">Enterprise</option>
+                  </select>
+                </div>
+              )}
+
+              <div className="pt-4 border-t border-slate-100 flex gap-4">
+                <button 
+                  type="button"
+                  onClick={() => { setEditingClinic(null); setAddingClinic(false); }}
+                  className="flex-1 px-6 py-3 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-100 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 disabled:opacity-50"
+                >
+                  {saving ? 'Saving...' : (editingClinic ? 'Update' : 'Add Clinic')}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -35,6 +35,10 @@ const App: React.FC = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const user = useSelector((state: RootState) => state.auth.user);
 
+  // Check if running in Electron (desktop app)
+  const isElectron = navigator.userAgent.toLowerCase().includes('electron');
+  const defaultUnauthRoute = isElectron ? '/login' : '/welcome';
+
   return (
     <Router>
       <Routes>
@@ -56,7 +60,7 @@ const App: React.FC = () => {
           element={
             isAuthenticated ? (
               user?.role === 'SYSTEM_ADMIN' ? <Navigate to="/system-admin" /> : <Dashboard />
-            ) : <Navigate to="/welcome" />
+            ) : <Navigate to={defaultUnauthRoute} />
           } 
         >
           {/* Admin & Superadmin only */}
