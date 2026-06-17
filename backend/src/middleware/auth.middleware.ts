@@ -70,7 +70,7 @@ export const requireRole = (roles: string[]) => {
 
     try {
 
-      if (!roles.includes(req.user.role) && req.user.role !== 'SUPER_ADMIN' && req.user.role !== 'ADMIN' && req.user.role !== 'admin') {
+      if (!roles.includes(req.user.role) && req.user.role !== 'SUPER_ADMIN' && req.user.role !== 'SYSTEM_ADMIN' && req.user.role !== 'ADMIN' && req.user.role !== 'admin') {
         console.error('Forbidden: Insufficient role. User role:', req.user.role, 'Expected:', roles);
         res.status(403).json({ error: 'Forbidden: Insufficient role permissions' });
         return;
