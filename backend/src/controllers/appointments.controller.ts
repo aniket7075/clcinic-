@@ -53,7 +53,7 @@ export const updateAppointment = async (req: AuthRequest, res: Response): Promis
   const { id } = req.params;
   const updateData = req.body;
   try {
-    const data = await DbService.update('appointments', id, updateData);
+    const data = await DbService.update('appointments', id as string, updateData);
 
     // TODO: Trigger SMS/WhatsApp notification if status changed to CANCELLED or RESCHEDULED
 

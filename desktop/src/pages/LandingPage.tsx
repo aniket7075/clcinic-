@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Activity, Shield, Clock, Users, Database, 
+import {
+  Activity, Shield, Clock, Users, Database,
   BarChart, ArrowRight, CheckCircle2,
   ChevronRight, Sparkles, Plus, X
 } from 'lucide-react';
@@ -99,20 +99,20 @@ const LandingPage: React.FC = () => {
           <div className="absolute top-[30%] right-[20%] animate-float-cross text-white/40" style={{ animationDelay: '1s' }}><Sparkles size={32} /></div>
           <div className="absolute bottom-[20%] left-[20%] animate-float-cross text-white/30" style={{ animationDelay: '3s' }}><Sparkles size={40} /></div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto text-center relative z-10 flex flex-col items-center">
-          
+
           {/* Animated Neon Tooth Centerpiece */}
           <div className="relative mb-12 mt-10 animate-float-neon group cursor-pointer">
             <div className="absolute inset-0 bg-blue-600 rounded-full blur-[50px] opacity-40 group-hover:opacity-70 transition-opacity duration-700"></div>
             <div className="relative w-32 h-32 md:w-40 md:h-40 bg-[#0A192F]/40 backdrop-blur-xl rounded-[2.5rem] border border-cyan-400/40 shadow-[0_0_50px_rgba(34,211,238,0.5)] flex items-center justify-center overflow-hidden">
-               <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 to-transparent"></div>
-               <div className="relative">
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-16 h-16 md:w-20 md:h-20 text-cyan-300 drop-shadow-[0_0_20px_rgba(34,211,238,1)]" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                   <path d="M16 2c-2 0-3.5 1-4 2-.5-1-2-2-4-2-2.2 0-4 1.8-4 4v3c0 2 1 4 2.5 5.5L9.5 21c.5 1 1.5 1 2 0l1.5-3 1.5 3c.5 1 1.5 1 2 0l3-6.5C21 13 22 11 22 9V6c0-2.2-1.8-4-4-4zM9.5 16l-2-4.5c-1-1-2-2.5-2-4V6c0-1.1.9-2 2-2 1 0 2.5 1 3 2.5v2h-2v1.5h2v2H9.5z" fill="rgba(34,211,238,0.2)"/>
-                 </svg>
-                 <Sparkles className="absolute -top-2 -right-4 w-6 h-6 text-cyan-200 animate-pulse drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
-               </div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/20 to-transparent"></div>
+              <div className="relative">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-16 h-16 md:w-20 md:h-20 text-cyan-300 drop-shadow-[0_0_20px_rgba(34,211,238,1)]" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M16 2c-2 0-3.5 1-4 2-.5-1-2-2-4-2-2.2 0-4 1.8-4 4v3c0 2 1 4 2.5 5.5L9.5 21c.5 1 1.5 1 2 0l1.5-3 1.5 3c.5 1 1.5 1 2 0l3-6.5C21 13 22 11 22 9V6c0-2.2-1.8-4-4-4zM9.5 16l-2-4.5c-1-1-2-2.5-2-4V6c0-1.1.9-2 2-2 1 0 2.5 1 3 2.5v2h-2v1.5h2v2H9.5z" fill="rgba(34,211,238,0.2)" />
+                </svg>
+                <Sparkles className="absolute -top-2 -right-4 w-6 h-6 text-cyan-200 animate-pulse drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+              </div>
             </div>
             {/* Glowing Ring */}
             <div className="absolute -inset-6 border-2 border-blue-500/30 rounded-full animate-[spin_10s_linear_infinite] border-t-cyan-400/80"></div>
@@ -123,7 +123,7 @@ const LandingPage: React.FC = () => {
             <span className="flex h-2 w-2 rounded-full bg-white animate-pulse shadow-[0_0_8px_#ffffff]"></span>
             {t('landing.hero.nextGen')}
           </div>
-          
+
           <h1 className="text-5xl md:text-7xl font-black tracking-tight text-white mb-8 leading-tight drop-shadow-lg">
             {t('landing.hero.osLine1')} <br />
             <span className="text-white drop-shadow-md">
@@ -211,7 +211,7 @@ const LandingPage: React.FC = () => {
                   { name: t('landing.pricing.starter.i8'), included: false },
                 ].map((item, i) => (
                   <li key={i} className={`flex items-center gap-3 font-medium ${item.included ? 'text-slate-600' : 'text-slate-400 opacity-60'}`}>
-                    {item.included ? <CheckCircle2 size={18} className="text-green-500 shrink-0" /> : <X size={18} className="text-slate-400 shrink-0" />} 
+                    {item.included ? <CheckCircle2 size={18} className="text-green-500 shrink-0" /> : <X size={18} className="text-slate-400 shrink-0" />}
                     {item.name}
                   </li>
                 ))}
@@ -244,7 +244,7 @@ const LandingPage: React.FC = () => {
                   { name: t('landing.pricing.pro.i8'), included: false },
                 ].map((item, i) => (
                   <li key={i} className={`flex items-center gap-3 font-medium ${item.included ? 'text-slate-200' : 'text-slate-500 opacity-60'}`}>
-                    {item.included ? <CheckCircle2 size={18} className="text-[#6899B0] shrink-0" /> : <X size={18} className="text-slate-500 shrink-0" />} 
+                    {item.included ? <CheckCircle2 size={18} className="text-[#6899B0] shrink-0" /> : <X size={18} className="text-slate-500 shrink-0" />}
                     {item.name}
                   </li>
                 ))}
@@ -274,7 +274,7 @@ const LandingPage: React.FC = () => {
                   { name: t('landing.pricing.enterprise.i8'), included: true },
                 ].map((item, i) => (
                   <li key={i} className={`flex items-center gap-3 font-medium ${item.included ? 'text-slate-600' : 'text-slate-400 opacity-60'}`}>
-                    {item.included ? <CheckCircle2 size={18} className="text-green-500 shrink-0" /> : <X size={18} className="text-slate-400 shrink-0" />} 
+                    {item.included ? <CheckCircle2 size={18} className="text-green-500 shrink-0" /> : <X size={18} className="text-slate-400 shrink-0" />}
                     {item.name}
                   </li>
                 ))}
@@ -322,20 +322,20 @@ const LandingPage: React.FC = () => {
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-[400px] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
             {/* Razorpay Header */}
             <div className="bg-[#121212] p-5 text-white flex justify-between items-start relative">
-               <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl uppercase">Test Mode</div>
-               <div className="flex gap-4 items-center">
-                 <div className="w-12 h-12 bg-white rounded flex items-center justify-center font-bold text-black text-xl">Q</div>
-                 <div>
-                   <h2 className="font-medium text-lg leading-tight">Q Dent</h2>
-                   <p className="text-white/60 text-sm">Subscription Upgrade</p>
-                 </div>
-               </div>
-               <div className="text-right">
-                  <p className="text-white/60 text-xs">Amount ({billingCycle})</p>
-                  <p className="font-semibold text-lg">₹{getPrice(selectedPlanToUpgrade, billingCycle)}</p>
-               </div>
+              <div className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl uppercase">Test Mode</div>
+              <div className="flex gap-4 items-center">
+                <div className="w-12 h-12 bg-white rounded flex items-center justify-center font-bold text-black text-xl">Q</div>
+                <div>
+                  <h2 className="font-medium text-lg leading-tight">Q Dent</h2>
+                  <p className="text-white/60 text-sm">Subscription Upgrade</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-white/60 text-xs">Amount ({billingCycle})</p>
+                <p className="font-semibold text-lg">₹{getPrice(selectedPlanToUpgrade, billingCycle)}</p>
+              </div>
             </div>
-            
+
             {/* Razorpay Body */}
             {paymentSuccess ? (
               <div className="p-8 text-center flex flex-col items-center justify-center min-h-[300px]">
@@ -348,20 +348,20 @@ const LandingPage: React.FC = () => {
             ) : (
               <form onSubmit={processPayment} className="p-0 flex-1 flex flex-col min-h-[400px]">
                 <div className="bg-[#F4F8FB] p-3 text-xs text-center border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                   Step 1: Create Account
+                  Step 1: Create Account
                 </div>
-                
+
                 <div className="p-5 flex-1 space-y-4">
-                  <input type="text" placeholder="Clinic / Hospital Name" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.clinic_name} onChange={e => setRegisterData({...registerData, clinic_name: e.target.value})} />
-                  <input type="text" placeholder="Admin Full Name" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.owner_name} onChange={e => setRegisterData({...registerData, owner_name: e.target.value})} />
-                  <input type="text" placeholder="Phone Number" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.phone} onChange={e => setRegisterData({...registerData, phone: e.target.value})} />
-                  <input type="email" placeholder="Email Address (Login ID)" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.email} onChange={e => setRegisterData({...registerData, email: e.target.value})} />
+                  <input type="text" placeholder="Clinic / Hospital Name" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.clinic_name} onChange={e => setRegisterData({ ...registerData, clinic_name: e.target.value })} />
+                  <input type="text" placeholder="Admin Full Name" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.owner_name} onChange={e => setRegisterData({ ...registerData, owner_name: e.target.value })} />
+                  <input type="text" placeholder="Phone Number" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.phone} onChange={e => setRegisterData({ ...registerData, phone: e.target.value })} />
+                  <input type="email" placeholder="Email Address (Login ID)" className="w-full p-3 border border-slate-300 rounded text-sm outline-none focus:border-blue-500 transition-colors bg-slate-50" required value={registerData.email} onChange={e => setRegisterData({ ...registerData, email: e.target.value })} />
                 </div>
 
                 {/* Razorpay Footer */}
                 <div className="p-4 border-t border-slate-200 bg-slate-50">
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={processingPayment}
                     className="w-full py-3.5 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 disabled:opacity-70 transition-all flex justify-center items-center shadow-md shadow-blue-600/20 uppercase tracking-wide text-sm"
                   >

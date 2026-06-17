@@ -65,7 +65,7 @@ export const updatePatient = async (req: AuthRequest, res: Response): Promise<vo
   }
 
   try {
-    const data = await DbService.update('patients', id, updateData);
+    const data = await DbService.update('patients', id as string, updateData);
     res.status(200).json(data);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
