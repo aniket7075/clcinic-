@@ -3,16 +3,58 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Configure the SMTP transport
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587', 10),
-  secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+import { supabase } from '../config/supabase';
+
+export interface SmtpConfig {
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  pass: string;
+  senderName: string;
+}
+
+/**
+ * Helper to fetch the latest SMTP config from the database and create a transporter.
+ * Falls back to process.env if DB config is missing or invalid.
+ */
+const getTransporterAndConfig = async (): Promise<{ transporter: nodemailer.Transporter | null; config: SmtpConfig | null }> => {
+  let dbConfig: SmtpConfig | null = null;
+  
+  try {
+    const { data, error } = await supabase
+      .from('system_settings')
+      .select('value')
+      .eq('key', 'smtp_config')
+      .single();
+      
+    if (!error && data?.value) {
+      dbConfig = data.value as SmtpConfig;
+    }
+  } catch (err) {
+    console.warn('Could not fetch SMTP config from DB, falling back to ENV variables');
+  }
+
+  const host = dbConfig?.host || process.env.SMTP_HOST || 'smtp.gmail.com';
+  const port = dbConfig?.port || parseInt(process.env.SMTP_PORT || '587', 10);
+  const secure = dbConfig?.secure ?? (process.env.SMTP_SECURE === 'true');
+  const user = dbConfig?.user || process.env.SMTP_USER;
+  const pass = dbConfig?.pass || process.env.SMTP_PASS;
+  const senderName = dbConfig?.senderName || 'Q Dent Admin';
+
+  if (!user || !pass) {
+    return { transporter: null, config: null };
+  }
+
+  const transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: { user, pass },
+  });
+
+  return { transporter, config: { host, port, secure, user, pass, senderName } };
+};
 
 /**
  * Sends the activation email containing the key and instructions.
@@ -21,8 +63,10 @@ const transporter = nodemailer.createTransport({
  * @param activationKey The generated activation key
  */
 export const sendActivationEmail = async (toEmail: string, clinicName: string, activationKey: string): Promise<void> => {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.warn('SMTP credentials not configured in .env. Skipping real email send, logging to console instead.');
+  const { transporter, config } = await getTransporterAndConfig();
+
+  if (!transporter || !config) {
+    console.warn('SMTP credentials not configured. Skipping real email send, logging to console instead.');
     console.log(`\n========== EMAIL MOCK ==========`);
     console.log(`To: ${toEmail}`);
     console.log(`Subject: Q Dent Software - Your Activation Key`);
@@ -31,7 +75,7 @@ export const sendActivationEmail = async (toEmail: string, clinicName: string, a
   }
 
   const mailOptions = {
-    from: `"Q Dent Admin" <${process.env.SMTP_USER}>`,
+    from: `"${config.senderName}" <${config.user}>`,
     to: toEmail,
     subject: 'Welcome to Q Dent - Your Activation Key',
     html: `
@@ -73,10 +117,12 @@ export const sendActivationEmail = async (toEmail: string, clinicName: string, a
  * Sends a notification email to the admin about a new clinic registration request.
  */
 export const sendAdminNotificationEmail = async (clinicName: string, ownerName: string, email: string, phone: string, plan: string, billingCycle: string, overrideAdminEmail?: string): Promise<void> => {
-  const adminEmail = overrideAdminEmail || process.env.ADMIN_EMAIL || process.env.SMTP_USER || 'admin@qdent.com';
+  const { transporter, config } = await getTransporterAndConfig();
   
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.warn('SMTP credentials not configured in .env. Skipping real admin notification email, logging to console instead.');
+  const adminEmail = overrideAdminEmail || process.env.ADMIN_EMAIL || config?.user || 'admin@qdent.com';
+  
+  if (!transporter || !config) {
+    console.warn('SMTP credentials not configured. Skipping real admin notification email, logging to console instead.');
     console.log(`\n========== ADMIN NOTIFICATION MOCK ==========`);
     console.log(`To: ${adminEmail}`);
     console.log(`Subject: New Clinic Registration Request`);
@@ -85,7 +131,7 @@ export const sendAdminNotificationEmail = async (clinicName: string, ownerName: 
   }
 
   const mailOptions = {
-    from: `"Q Dent System" <${process.env.SMTP_USER}>`,
+    from: `"${config.senderName}" <${config.user}>`,
     to: adminEmail,
     subject: `New Plan Enquiry: ${clinicName} wants the ${plan} Plan`,
     html: `

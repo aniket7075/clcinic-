@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LogOut, LayoutDashboard, Building, CheckCircle, Shield } from 'lucide-react';
+import { LogOut, LayoutDashboard, Building, CheckCircle, Shield, Settings } from 'lucide-react';
 import { logout } from '../store/authSlice';
 import type { RootState } from '../store';
 
@@ -40,6 +40,10 @@ const SystemAdminLayout: React.FC = () => {
             <Building size={20} />
             <span>All Clinics</span>
           </Link>
+          <Link to="/system-admin/settings" className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all ${location.pathname === '/system-admin/settings' ? 'bg-blue-600 text-white font-bold' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+            <Settings size={20} />
+            <span>System Settings</span>
+          </Link>
         </nav>
 
         <div className="p-4 border-t border-slate-800">
@@ -62,7 +66,8 @@ const SystemAdminLayout: React.FC = () => {
         <header className="bg-white border-b border-slate-200 p-6">
           <h1 className="text-2xl font-bold text-slate-900">
             {location.pathname === '/system-admin' ? 'SaaS Overview' : 
-             location.pathname === '/system-admin/requests' ? 'Subscription Requests' : 'All Clinics'}
+             location.pathname === '/system-admin/requests' ? 'Subscription Requests' : 
+             location.pathname === '/system-admin/settings' ? 'System Settings' : 'All Clinics'}
           </h1>
         </header>
         <main className="flex-1 overflow-y-auto p-6 bg-slate-50">

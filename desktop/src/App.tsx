@@ -30,6 +30,7 @@ import SystemAdminLayout from './components/SystemAdminLayout';
 import SystemDashboard from './pages/system-admin/SystemDashboard';
 import ClinicRequests from './pages/system-admin/ClinicRequests';
 import AllClinics from './pages/system-admin/AllClinics';
+import SystemSettings from './pages/system-admin/SystemSettings';
 
 const App: React.FC = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -93,6 +94,7 @@ const App: React.FC = () => {
           <Route index element={<SystemDashboard />} />
           <Route path="requests" element={<ClinicRequests />} />
           <Route path="clinics" element={<AllClinics />} />
+          <Route path="settings" element={<SystemSettings />} />
         </Route>
       </Routes>
     </Router>
