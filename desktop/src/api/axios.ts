@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Backend is running on localhost:5000 for the desktop app
-const baseURL = 'https://clcinic.onrender.com/api';
+const baseURL = 'https://qdent-avloj.ondigitalocean.app/api';
 
 const api = axios.create({
   baseURL,
