@@ -16,15 +16,7 @@ export const localDb = new Database(dbPath, { verbose: console.log });
 localDb.pragma('foreign_keys = ON');
 
 export function initLocalDb() {
-  // System Settings
-  localDb.exec(`
-    CREATE TABLE IF NOT EXISTS system_settings (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
-  `);
-
+  // Create schema
   // Profiles
   localDb.exec(`
     CREATE TABLE IF NOT EXISTS profiles (
