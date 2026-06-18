@@ -102,7 +102,7 @@ const Settings: React.FC = () => {
   }, []);
   
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (activeTab === 'whatsapp' && whatsappStatus !== 'CONNECTED') {
       interval = setInterval(fetchWhatsappStatus, 3000);
     }

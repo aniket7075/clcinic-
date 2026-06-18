@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { getWhatsAppStatus, logoutWhatsApp } from '../controllers/whatsapp.controller';
-import { requireAuth } from '../middleware/auth.middleware';
+import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router();
 
 // These routes require the user to be authenticated as clinic admin or doctor
-router.use(requireAuth);
+router.use(authenticateToken);
 
-router.get('/status', getWhatsAppStatus);
-router.post('/logout', logoutWhatsApp);
+router.get('/status', authenticateToken, getWhatsAppStatus);
+router.post('/logout', authenticateToken, logoutWhatsApp);
 
 export default router;
