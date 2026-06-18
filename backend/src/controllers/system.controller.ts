@@ -1,15 +1,18 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
-import { supabase } from '../config/supabase';
+import { localDb } from '../config/sqlite';
 
 export const getSystemSettings = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { data, error } = await supabase
-      .from('system_settings')
-      .select('*')
-      .order('key');
+    const stmt = localDb.prepare('SELECT * FROM system_settings ORDER BY key');
+    const rows = stmt.all();
+    
+    // Parse value strings back to JSON
+    const data = rows.map((row: any) => ({
+      ...row,
+      value: JSON.parse(row.value)
+    }));
 
-    if (error) throw error;
     res.status(200).json(data);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -21,14 +24,16 @@ export const updateSystemSetting = async (req: AuthRequest, res: Response): Prom
     const { key } = req.params;
     const { value } = req.body;
 
-    const { data, error } = await supabase
-      .from('system_settings')
-      .upsert({ key, value, updated_at: new Date().toISOString() })
-      .select()
-      .single();
+    const valueStr = JSON.stringify(value);
+    const stmt = localDb.prepare(`
+      INSERT INTO system_settings (key, value, updated_at) 
+      VALUES (?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP
+    `);
+    
+    stmt.run(key, valueStr);
 
-    if (error) throw error;
-    res.status(200).json(data);
+    res.status(200).json({ key, value, updated_at: new Date().toISOString() });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
