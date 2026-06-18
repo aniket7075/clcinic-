@@ -19,6 +19,8 @@ interface DashboardStats {
   monthlyAppointments: number;
   todayRevenue: number;
   monthlyRevenue: number;
+  todayNetRevenue: number;
+  monthlyNetRevenue: number;
   pendingPayments: number;
   followUpPatients: number;
   lowStockAlerts: number;
@@ -259,12 +261,26 @@ const Dashboard: React.FC = () => {
                     <>
                       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
-                          <h3 className="text-black text-sm ">{t('dashboard.todaysRevenue')}</h3>
+                          <h3 className="text-black text-sm ">{t('dashboard.todaysRevenue')} (Gross)</h3>
                           <div className="p-2 bg-emerald-50 rounded-lg text-emerald-600">
                             <IndianRupee size={20} />
                           </div>
                         </div>
                         <p className="text-3xl font-bold text-black mt-4">₹{stats?.todayRevenue}</p>
+                      </div>
+
+                      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-[#6899B0]/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3"></div>
+                        <div className="flex justify-between items-start relative z-10">
+                          <h3 className="text-black text-sm font-bold">Net Profit (Today)</h3>
+                          <div className="p-2 bg-[#6899B0]/10 rounded-lg text-[#6899B0]">
+                            <Activity size={20} />
+                          </div>
+                        </div>
+                        <p className={`text-3xl font-black mt-4 relative z-10 ${stats && stats.todayNetRevenue < 0 ? 'text-red-500' : 'text-[#6899B0]'}`}>
+                          ₹{stats?.todayNetRevenue}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-2 relative z-10">After deducting expenses</p>
                       </div>
                       
                       <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">

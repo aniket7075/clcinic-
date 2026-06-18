@@ -21,7 +21,7 @@ const Settings: React.FC = () => {
   });
 
   const [clinicId, setClinicId] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'profile' | 'templates' | 'subscription'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'templates' | 'subscription' | 'whatsapp'>('profile');
   const [templates, setTemplates] = useState<any[]>([]);
 
   // Subscription state
@@ -33,6 +33,29 @@ const Settings: React.FC = () => {
   const [selectedPlanToUpgrade, setSelectedPlanToUpgrade] = useState<'pro' | 'enterprise'>('pro');
   const [processingPayment, setProcessingPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  // WhatsApp state
+  const [whatsappStatus, setWhatsappStatus] = useState<'DISCONNECTED' | 'WAITING_FOR_QR' | 'CONNECTED'>('DISCONNECTED');
+  const [qrCodeData, setQrCodeData] = useState<string | null>(null);
+
+  const fetchWhatsappStatus = async () => {
+    try {
+      const res = await api.get('/whatsapp/status');
+      setWhatsappStatus(res.data.status);
+      setQrCodeData(res.data.qrCodeUrl);
+    } catch (err) {
+      console.error('Error fetching WhatsApp status:', err);
+    }
+  };
+
+  const handleWhatsappLogout = async () => {
+    try {
+      await api.post('/whatsapp/logout');
+      fetchWhatsappStatus();
+    } catch (err) {
+      alert('Failed to logout of WhatsApp');
+    }
+  };
 
   const fetchTemplates = async () => {
     try {
@@ -75,7 +98,18 @@ const Settings: React.FC = () => {
   useEffect(() => {
     fetchProfile();
     fetchTemplates();
+    fetchWhatsappStatus();
   }, []);
+  
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (activeTab === 'whatsapp' && whatsappStatus !== 'CONNECTED') {
+      interval = setInterval(fetchWhatsappStatus, 3000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [activeTab, whatsappStatus]);
 
   const handleSaveTemplate = async (templateId: string, newSubject: string, newBody: string) => {
     try {
@@ -195,6 +229,12 @@ const Settings: React.FC = () => {
           className={`pb-3 px-2 font-medium flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'subscription' ? 'border-[#6899B0] text-[#6899B0]' : 'border-transparent text-slate-500 hover:text-slate-900'}`}
         >
           <CreditCard size={18} /> Subscription & Billing
+        </button>
+        <button
+          onClick={() => setActiveTab('whatsapp')}
+          className={`pb-3 px-2 font-medium flex items-center gap-2 border-b-2 transition-colors ${activeTab === 'whatsapp' ? 'border-[#6899B0] text-[#6899B0]' : 'border-transparent text-slate-500 hover:text-slate-900'}`}
+        >
+          <MessageSquare size={18} /> WhatsApp Integration
         </button>
       </div>
 
@@ -501,6 +541,53 @@ const Settings: React.FC = () => {
                   {activePlan === 'enterprise' ? 'Current Plan' : 'Upgrade to Enterprise'}
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'whatsapp' && (
+          <div className="p-6">
+            <div className="mb-8">
+               <h2 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2"><MessageSquare size={24} className="text-[#6899B0]"/> WhatsApp Integration</h2>
+               <p className="text-slate-500">Connect your clinic's WhatsApp account to automatically send birthday wishes and appointment reminders for free.</p>
+            </div>
+            
+            <div className="border border-slate-200 rounded-2xl p-6 bg-slate-50 mb-6 text-center">
+              {whatsappStatus === 'CONNECTED' ? (
+                <div>
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle2 size={32} className="text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">WhatsApp is Connected!</h3>
+                  <p className="text-slate-500 mb-6">Your server is successfully linked to your WhatsApp account. Messages will be sent automatically.</p>
+                  <button 
+                    onClick={handleWhatsappLogout}
+                    className="px-6 py-2.5 bg-red-50 text-red-600 font-bold border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
+                  >
+                    Disconnect WhatsApp
+                  </button>
+                </div>
+              ) : whatsappStatus === 'WAITING_FOR_QR' && qrCodeData ? (
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-4">Scan QR Code to Connect</h3>
+                  <div className="bg-white p-4 inline-block rounded-xl border border-slate-200 shadow-sm mb-4">
+                    <img src={qrCodeData} alt="WhatsApp QR Code" className="w-64 h-64 object-contain" />
+                  </div>
+                  <ol className="text-sm text-slate-600 text-left max-w-sm mx-auto space-y-2 mb-4">
+                    <li>1. Open WhatsApp on your clinic's phone</li>
+                    <li>2. Tap <strong>Menu</strong> or <strong>Settings</strong> and select <strong>Linked Devices</strong></li>
+                    <li>3. Tap on <strong>Link a Device</strong></li>
+                    <li>4. Point your phone to this screen to capture the code</li>
+                  </ol>
+                  <p className="text-xs text-slate-400">QR code refreshes automatically. Status updates every 3 seconds.</p>
+                </div>
+              ) : (
+                <div>
+                   <div className="w-12 h-12 border-4 border-[#6899B0] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                   <h3 className="text-lg font-bold text-slate-900 mb-2">Starting WhatsApp Service...</h3>
+                   <p className="text-slate-500">Please wait while we initialize the connection. The QR code will appear shortly.</p>
+                </div>
+              )}
             </div>
           </div>
         )}

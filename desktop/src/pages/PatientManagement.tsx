@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
-import { Plus, Search, Activity, Users as UsersIcon } from 'lucide-react';
+import { Plus, Search, Activity, Users as UsersIcon, Download } from 'lucide-react';
 
 interface Patient {
   id: string;
@@ -65,6 +65,41 @@ const PatientManagement: React.FC = () => {
     }
   };
 
+  const exportToCSV = () => {
+    if (patients.length === 0) {
+      alert('No patients to export');
+      return;
+    }
+
+    const headers = ['Case Number', 'First Name', 'Last Name', 'Mobile', 'Gender', 'Date of Birth', 'Age'];
+    const csvRows = [];
+    csvRows.push(headers.join(','));
+
+    patients.forEach(patient => {
+      const values = [
+        patient.case_number,
+        patient.first_name,
+        patient.last_name,
+        patient.mobile,
+        patient.gender,
+        patient.dob || 'N/A',
+        patient.age || 'N/A'
+      ];
+      // Escape commas and quotes
+      const escapedValues = values.map(v => `"${String(v).replace(/"/g, '""')}"`);
+      csvRows.push(escapedValues.join(','));
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "patients_list.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
@@ -72,13 +107,22 @@ const PatientManagement: React.FC = () => {
           <h1 className="text-2xl font-bold text-slate-900">Patient Management</h1>
           <p className="text-slate-500 text-sm mt-1">View and manage your clinic's patient registry.</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] font-semibold transition-all shadow-sm"
-        >
-          <Plus size={18} />
-          Add Patient
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={exportToCSV}
+            className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 font-semibold transition-all shadow-sm"
+          >
+            <Download size={18} />
+            Export CSV
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-[#6899B0] text-white rounded-lg hover:bg-[#5D8799] font-semibold transition-all shadow-sm"
+          >
+            <Plus size={18} />
+            Add Patient
+          </button>
+        </div>
       </div>
 
       <div className="mb-6">

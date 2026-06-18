@@ -6,7 +6,7 @@ import { supabase } from '../config/supabase';
 const generatePassword = () => Math.random().toString(36).slice(-10) + 'A1!';
 
 export const createStaff = async (req: AuthRequest, res: Response): Promise<void> => {
-  const { email, password, role, firstName, lastName, mobile, employeeId, designation, salary, joiningDate, avatarUrl } = req.body;
+  const { email, password, role, firstName, lastName, mobile, employeeId, designation, salary, joiningDate, avatarUrl, dob } = req.body;
 
   if (!email || !role || !firstName || !lastName || !employeeId) {
     res.status(400).json({ error: 'Missing required fields' });
@@ -40,6 +40,7 @@ export const createStaff = async (req: AuthRequest, res: Response): Promise<void
       mobile: mobile || null,
       email: email,
       avatar_url: avatarUrl || null,
+      dob: dob || null,
     });
 
     if (profileError) {
@@ -88,7 +89,8 @@ export const getStaff = async (req: AuthRequest, res: Response): Promise<void> =
           last_name,
           email,
           mobile,
-          avatar_url
+          avatar_url,
+          dob
         )
       `)
       .eq('clinic_id', req.user.clinic_id);
@@ -106,7 +108,7 @@ export const getStaff = async (req: AuthRequest, res: Response): Promise<void> =
 
 export const updateStaff = async (req: AuthRequest, res: Response): Promise<void> => {
   const { id } = req.params; // This is the staff table ID
-  const { role, firstName, lastName, mobile, designation, salary, avatarUrl } = req.body;
+  const { role, firstName, lastName, mobile, designation, salary, avatarUrl, dob } = req.body;
 
   try {
     // Get profile_id first
@@ -132,7 +134,8 @@ export const updateStaff = async (req: AuthRequest, res: Response): Promise<void
         first_name: firstName,
         last_name: lastName,
         mobile,
-        avatar_url: avatarUrl
+        avatar_url: avatarUrl,
+        dob
       })
       .eq('id', profileId);
 

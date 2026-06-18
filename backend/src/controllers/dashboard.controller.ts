@@ -46,6 +46,22 @@ export const getDashboardStats = async (req: AuthRequest, res: Response): Promis
       .neq('status', 'PAID');
     const pendingPayments = pendingInvoices?.reduce((acc: number, i: any) => acc + Number(i.final_amount), 0) || 0;
 
+    // Expenses & Net Revenue
+    const { data: todayExpensesData } = await supabase.from('expenses')
+      .select('amount')
+      .eq('clinic_id', req.user.clinic_id)
+      .eq('expense_date', today);
+    const todayExpenses = todayExpensesData?.reduce((acc: number, e: any) => acc + Number(e.amount), 0) || 0;
+
+    const { data: monthlyExpensesData } = await supabase.from('expenses')
+      .select('amount')
+      .eq('clinic_id', req.user.clinic_id)
+      .gte('expense_date', firstDayOfMonth);
+    const monthlyExpenses = monthlyExpensesData?.reduce((acc: number, e: any) => acc + Number(e.amount), 0) || 0;
+
+    const todayNetRevenue = todayRevenue - todayExpenses;
+    const monthlyNetRevenue = monthlyRevenue - monthlyExpenses;
+
     // Follow-up Patients
     const { count: followUpPatients } = await supabase.from('medical_history')
       .select('*', { count: 'exact', head: true })
@@ -64,6 +80,8 @@ export const getDashboardStats = async (req: AuthRequest, res: Response): Promis
       monthlyAppointments: monthlyAppointments || 0,
       todayRevenue,
       monthlyRevenue,
+      todayNetRevenue,
+      monthlyNetRevenue,
       pendingPayments,
       followUpPatients: followUpPatients || 0,
       lowStockAlerts

@@ -1,5 +1,6 @@
 import cron from 'node-cron';
 import { supabase } from '../config/supabase';
+import { whatsappService } from '../services/whatsapp.service';
 
 // Helper to format date as YYYY-MM-DD
 const getTomorrowDateString = () => {
@@ -16,12 +17,12 @@ const sendWhatsAppReminder = async (appointment: any) => {
 
   const message = `Hello ${patientName},\n\nThis is a friendly reminder from Q DENT Clinic that you have an appointment tomorrow (${date}) at ${time}.\n\nPlease let us know if you need to reschedule. We look forward to seeing you!`;
 
-  // SIMULATE sending message by logging it.
-  // In a real app, you would use Twilio, Meta WhatsApp API, or WATI here.
-  console.log(`[WHATSAPP API SIMULATION] Sending to ${mobile}:`);
-  console.log(`-------------------------------------------------`);
-  console.log(message);
-  console.log(`-------------------------------------------------`);
+  console.log(`[WHATSAPP] Sending Reminder to ${mobile}`);
+  const success = await whatsappService.sendMessage(mobile, message);
+  
+  if (!success) {
+    console.error(`Failed to send WhatsApp message to ${mobile}`);
+  }
 
   // Log to database
   const { error } = await supabase.from('automated_reminders').insert({

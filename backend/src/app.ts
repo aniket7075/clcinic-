@@ -29,6 +29,8 @@ import settingsRoutes from './routes/settings.routes';
 import notificationsRoutes from './routes/notifications.routes';
 import clinicsRoutes from './routes/clinics.routes';
 import publicRoutes from './routes/public.routes';
+import whatsappRoutes from './routes/whatsapp.routes';
+import expensesRoutes from './routes/expenses.routes';
 
 // Setup routes here later
 app.use('/api/public', publicRoutes);
@@ -44,5 +46,7 @@ app.use('/api/reports', reportsRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/clinics', clinicsRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
+app.use('/api/expenses', expensesRoutes);
 
 export default app;

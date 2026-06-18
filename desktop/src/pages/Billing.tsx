@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
-import { FileText, Download, Plus, Trash2 } from 'lucide-react';
+import { FileText, Download, Plus, Trash2, Printer } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Billing: React.FC = () => {
@@ -58,6 +58,32 @@ const Billing: React.FC = () => {
     } catch (err) {
       console.error('Error downloading PDF:', err);
       alert('Failed to download PDF');
+    }
+  };
+
+  const handlePrintInvoice = async (invoiceId: string) => {
+    try {
+      const response = await api.get(`/billing/${invoiceId}/pdf`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = url;
+      document.body.appendChild(iframe);
+      
+      iframe.onload = () => {
+        setTimeout(() => {
+          iframe.contentWindow?.print();
+          // Clean up the object URL and iframe after a delay
+          setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(iframe);
+          }, 1000);
+        }, 100);
+      };
+    } catch (err) {
+      console.error('Error printing invoice:', err);
+      alert('Failed to print invoice');
     }
   };
 
@@ -179,6 +205,13 @@ const Billing: React.FC = () => {
                     </span>
                   </td>
                   <td className="p-4 text-right flex justify-end gap-2">
+                    <button 
+                      onClick={() => handlePrintInvoice(inv.id)}
+                      title="Print PDF"
+                      className="p-2 text-slate-600 hover:text-[#6899B0] hover:bg-[#6899B0]/10 rounded-lg transition-colors"
+                    >
+                      <Printer size={16} />
+                    </button>
                     <button 
                       onClick={() => handleDownloadPDF(inv.id)}
                       title="Download PDF"

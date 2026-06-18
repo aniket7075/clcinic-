@@ -2,6 +2,8 @@ import app from './app';
 import dotenv from 'dotenv';
 import { initCronJobs } from './jobs/appointmentReminders';
 import { initReminderCron } from './workers/reminderCron';
+import { initBirthdayCron } from './workers/birthdayCron';
+import { whatsappService } from './services/whatsapp.service';
 import { initLocalDb } from './config/sqlite';
 
 dotenv.config();
@@ -12,5 +14,10 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   initLocalDb(); // Initialize SQLite DB backup
   initCronJobs(); // Initialize background tasks
+  
+  // Initialize free WhatsApp API
+  whatsappService.initialize();
+
   initReminderCron(); // Initialize WhatsApp reminders
+  initBirthdayCron(); // Initialize Birthday messages
 });

@@ -41,7 +41,7 @@ const StaffManagement: React.FC = () => {
 
   // Form States
   const [formData, setFormData] = useState({
-    email: '', password: '', role: 'DOCTOR', firstName: '', lastName: '', employeeId: '', designation: '', mobile: '', salary: 0, avatarUrl: ''
+    email: '', password: '', role: 'DOCTOR', firstName: '', lastName: '', employeeId: '', designation: '', mobile: '', salary: 0, avatarUrl: '', dob: ''
   });
 
   const [leaveFormData, setLeaveFormData] = useState({
@@ -104,7 +104,7 @@ const StaffManagement: React.FC = () => {
       await api.post('/staff', formData);
       setShowModal(false);
       setFormData({
-        email: '', password: '', role: 'DOCTOR', firstName: '', lastName: '', employeeId: '', designation: '', mobile: '', salary: 0, avatarUrl: ''
+        email: '', password: '', role: 'DOCTOR', firstName: '', lastName: '', employeeId: '', designation: '', mobile: '', salary: 0, avatarUrl: '', dob: ''
       });
       fetchStaff();
     } catch (err) {
@@ -449,6 +449,10 @@ const StaffManagement: React.FC = () => {
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Date of Birth</label>
+                  <input type="date" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.dob} onChange={e => setFormData({...formData, dob: e.target.value})} />
+                </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">{t('staff.email')}</label>
                   <input required type="email" className="w-full border p-2 rounded outline-none focus:ring-2 focus:ring-[#6899B0]" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
