@@ -14,6 +14,19 @@ export const authenticateToken = async (req: AuthRequest, res: Response, next: N
     return;
   }
 
+  // --- MOCK INTERCEPT FOR SYSTEM ADMIN ---
+  if (token === 'mock_sysadmin_token') {
+    req.user = {
+      id: 'sysadmin',
+      email: 'admin@qdent.com',
+      role: 'SYSTEM_ADMIN',
+      clinic_id: '00000000-0000-0000-0000-000000000000'
+    };
+    next();
+    return;
+  }
+  // ---------------------------------------
+
   try {
     const { data, error } = await supabase.auth.getUser(token);
 
